@@ -1,4 +1,4 @@
 export default {
-    DEADLINE: 'time',
-    EXPIRED: 'alert'
+  DEADLINE: "time",
+  EXPIRED: "alert",
 };
