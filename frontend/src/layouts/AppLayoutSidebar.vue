@@ -78,8 +78,8 @@ const emits = defineEmits(["updateTasks"]);
 /**
  * Moves a task in the task list and (emit 'updateTasks')
  * @todo - подумать над обратным перемещением карточки сверху вниз
- * @param active obj - перемещаемая задача
- * @param toTask Proxy - задача в которую происходит перемещение
+ * @param active obj - выбранная задача
+ * @param toTask Proxy - то, куда отпустили задачу, может не быть
  */
 function moveTask(active, toTask) {
   console.log(active, toTask);

@@ -19,10 +19,6 @@ const props = defineProps({
   },
 });
 
-/**
- * Get array of tags
- * @type {ComputedRef<*>}
- */
 const tagsArray = computed(() => {
   return getTagsArrayFromString(props.tags);
 });

@@ -1,25 +1,25 @@
-<!--header-->
 <template>
-  <!--    logo-->
   <header class="header">
     <div class="header__logo">
-      <a href="#" class="logo">
+      <router-link to="/" class="logo">
         <img
           src="@/assets/img/logo.svg"
           alt="VueWork logo"
           width="147"
           height="23"
         />
-      </a>
+      </router-link>
     </div>
-    <!--search panel-->
+
     <form action="#" class="header__search">
       <input type="search" name="search" required placeholder="Поиск" />
       <button type="submit">Найти</button>
     </form>
-    <!--new task button-->
-    <a href="#" class="header__create-task">Создать карточку</a>
-    <!--user avatar-->
+
+    <router-link to="/tasks/create" class="header__create-task"
+      >Создать карточку</router-link
+    >
+
     <a href="#" class="header__user">
       <img
         src="@/assets/img/admin.jpg"
@@ -28,7 +28,7 @@
         height="40"
       />
     </a>
-    <!--user menu-->
+
     <div class="header__menu">
       <div class="user-menu">
         <img

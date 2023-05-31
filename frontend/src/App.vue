@@ -4,11 +4,14 @@
     :filters="state.filters"
     @update-tasks="updateTasks"
   >
-    <home-view
+    <router-view
       :tasks="filteredTasks"
       :filters="state.filters"
       @update-tasks="updateTasks"
       @apply-filters="applyFilters"
+      @add-task="addTask"
+      @edit-task="editTask"
+      @delete-task="deleteTask"
     />
   </app-layout>
 </template>
@@ -16,9 +19,9 @@
 <script setup>
 import { reactive, computed } from "vue";
 import { AppLayout } from "@/layouts";
-import { HomeView } from "@/views";
 import { normalizeTask } from "./common/helpers";
 import tasks from "./mocks/tasks.json";
+import users from "./mocks/users.json";
 
 const state = reactive({
   tasks: tasks.map((task) => normalizeTask(task)),
@@ -29,13 +32,8 @@ const state = reactive({
   },
 });
 
-/**
- * Фильтрация задач
- * @type {ComputedRef<unknown>}
- */
 const filteredTasks = computed(() => {
   const filtersAreEmpty = Object.values(state.filters).every(
-    // Нет какой-либо длинны (search, users, statuses), то вернуть все задачи
     (value) => !value.length
   );
   if (filtersAreEmpty) {
@@ -45,14 +43,12 @@ const filteredTasks = computed(() => {
 
   // Применить фильтр по поиску
   const searchFilter = (task) =>
-    // Поиск по заголовку через includes
     task.title
       .toLowerCase()
       .includes(state.filters.search.toLowerCase().trim());
 
   // Применить фильтр по пользователям
   const usersFilter = (task) =>
-    // some - проходит ли хотя бы один элемент в массиве проверку
     state.filters.users.some((userId) => userId === task.userId);
 
   // Применить фильтр по статусам
@@ -68,51 +64,72 @@ const filteredTasks = computed(() => {
       users: usersFilter,
       statuses: statusesFilter,
     };
-
-    // Срабатывает только тот фильтр в котором есть значения
-    // Если условие  !state.filters[key].length  вернет  true, то callback(task) не будет вызван.
     return Object.entries(result).every(
       ([key, callback]) => !state.filters[key].length || callback(task)
     );
   });
 });
 
-/**
- * Обновляем задачу новыми данными
- * Функция обновляет задачи в массиве state.tasks на основе заданных данных из tasksToUpdate.
- * @param tasksToUpdate - содержит список задач, которые нужно обновить
- */
+// Обновить сортировку задач
 function updateTasks(tasksToUpdate) {
   tasksToUpdate.forEach((task) => {
-    // Нахождение элемента с id, совпадающим с id задачи из tasksToUpdate.
     const index = state.tasks.findIndex(({ id }) => id === task.id);
+    // findIndex вернет элемент массива или -1
+    // Используем bitwise not для определения если index === -1
+    // ~-1 вернет 0, а значит false
     if (~index) {
-      // Если такой элемент найден, то функция использует метод splice() для удаления старой задачи из массива state.tasks и вставки новой задачи на ее место.
       state.tasks.splice(index, 1, task);
     }
   });
 }
 
-/**
- * Функция используется для фильтрации массива данных.
- * Удаляем из массива фильтра сущности или добавляем item в массив фильтра по сущности.
- * @param item - элемент фильтра
- * @param entity - сущность, например users
- */
 function applyFilters({ item, entity }) {
-  // Если фильтры для данной сущности отсутствуют, то функция добавляет новый фильтр (item) в виде массива в объект
-  // "state.filters" для данной сущности.
+  console.log(item, entity);
   if (!Array.isArray(state.filters[entity])) {
     state.filters[entity] = item;
   } else {
-    // Функция ищет фильтр в массиве и если находит его, удаляет его из массива, в противном случае - добавляет его в массив.
     const resultValues = [...state.filters[entity]];
-    // Сохраняет найденный индекс в переменной itemIndex. Затем этот индекс используется для удаления элемента из массива
-    // resultValues с помощью метода  splice().
     const itemIndex = resultValues.findIndex((el) => el === item);
     ~itemIndex ? resultValues.splice(itemIndex, 1) : resultValues.push(item);
     state.filters[entity] = resultValues;
   }
+}
+
+function getTaskUserById(id) {
+  return users.find((user) => user.id === id);
+}
+
+// Создаем новую задачу и добавляем в массив задач
+function addTask(task) {
+  // Нормализуем задачу
+  const newTask = normalizeTask(task);
+  // Добавляем идентификатор, последний элемент в списке задач
+  // После подключения сервера идентификатор будет присваиваться сервером
+  newTask.id = state.tasks.length + 1;
+  // Добавляем задачу в конец списка задач в беклоге
+  newTask.sortOrder = state.tasks.filter((task) => !task.columnId).length;
+  // Если задаче присвоен исполнитель, то добавляем объект юзера в задачу
+  // Это будет добавлено сервером позже
+  if (newTask.userId) {
+    newTask.user = { ...getTaskUserById(newTask.userId) };
+  }
+  // Добавляем задачу в массив
+  state.tasks = [...state.tasks, newTask];
+}
+
+function editTask(task) {
+  const index = state.tasks.findIndex(({ id }) => task.id === id);
+  if (~index) {
+    const newTask = normalizeTask(task);
+    if (newTask.userId) {
+      newTask.user = { ...getTaskUserById(newTask.userId) };
+    }
+    state.tasks.splice(index, 1, newTask);
+  }
+}
+
+function deleteTask(id) {
+  state.tasks = state.tasks.filter((task) => task.id !== id);
 }
 </script>
 
