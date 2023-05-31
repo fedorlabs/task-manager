@@ -117,6 +117,10 @@ function addTask(task) {
   state.tasks = [...state.tasks, newTask];
 }
 
+/**
+ * Производим замену элемента новыми данными
+ * @param task
+ */
 function editTask(task) {
   const index = state.tasks.findIndex(({ id }) => task.id === id);
   if (~index) {

@@ -1,13 +1,12 @@
-<!--main component-->
 <template>
-  <div class="app_layout">
+  <div className="app_layout">
     <app-layout-header />
-    <div class="content">
+    <div className="content">
       <app-layout-sidebar
         :tasks="props.tasks"
+        :filters="props.filters"
         @update-tasks="$emit('updateTasks', $event)"
       />
-      <!--      home-view-->
       <slot />
     </div>
   </div>

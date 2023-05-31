@@ -2,7 +2,12 @@
   <main class="content">
     <section class="desk">
       <!--      Отображение дочерних маршрутов-->
-      <router-view :tasks="props.tasks" />
+      <router-view
+        :tasks="props.tasks"
+        @add-task="$emit('addTask', $event)"
+        @edit-task="$emit('editTask', $event)"
+        @delete-task="$emit('deleteTask', $event)"
+      />
       <!--      Шапка доски-->
       <div class="desk__header">
         <h1 class="desk__title">Design Coffee Lab</h1>
@@ -82,8 +87,6 @@ import columns from "../mocks/columns.json";
 import users from "../mocks/users.json";
 import { STATUSES } from "@/common/constants";
 import DeskColumn from "@/modules/columns/components/DeskColumn.vue";
-// import rawTasks from "../mocks/tasks.json";
-// import { normalizeTask, getTagsArrayFromString } from "@/common/helpers";
 import { getImage } from "@/common/helpers";
 import { uniqueId } from "lodash";
 
@@ -98,21 +101,20 @@ const props = defineProps({
   },
 });
 
-defineEmits(["applyFilters", "updateTasks"]);
+defineEmits([
+  "applyFilters",
+  "updateTasks",
+  "addTask",
+  "editTask",
+  "deleteTask",
+]);
 
 const state = reactive({ columns });
 
-/**
- * Добавляет колонку с id column_id и title новый столбец
- */
 function addColumn() {
   state.columns.push({ id: uniqueId("column_"), title: "Новый столбец" });
 }
 
-/**
- * Обновляет колонку новыми данными
- * @param column
- */
 function updateColumn(column) {
   const index = state.columns.findIndex(({ id }) => id === column.id);
   if (~index) {
@@ -120,10 +122,6 @@ function updateColumn(column) {
   }
 }
 
-/**
- * Удаляет колонки не равные переданному id
- * @param id
- */
 function deleteColumn(id) {
   state.columns = state.columns.filter((column) => column.id !== id);
 }
@@ -172,13 +170,10 @@ function deleteColumn(id) {
   }
 
   &__add {
-    @include m-s10-h12;
-
     position: relative;
 
     margin: 0;
-    padding: 0;
-    padding-left: 32px;
+    padding: 0 0 0 35px;
 
     cursor: pointer;
 
@@ -188,14 +183,22 @@ function deleteColumn(id) {
     background-color: transparent;
 
     &::before {
-      @include p_center-v;
-
-      width: 23px;
-      height: 23px;
+      width: 24px;
+      height: 24px;
 
       content: "";
 
-      background-image: url("../img/icon-add.svg");
+      background-image: url("@/assets/img/icon-add.svg");
+
+      @include p_center-v;
+    }
+
+    &:hover {
+      color: $blue-600;
+    }
+
+    &:active {
+      color: $blue-300;
     }
   }
 
@@ -355,235 +358,10 @@ function deleteColumn(id) {
   }
 }
 
-.column {
-  $bl: &;
-
-  display: flex;
-  flex-direction: column;
-
-  padding-top: 15px;
-
-  border-left: 1px solid $blue-gray-200;
-
-  &__name {
-    @include m-s14-h21;
-
-    display: flex;
-    align-items: center;
-
-    margin: 0 8px;
-
-    color: $blue-gray-600;
-
-    &:hover {
-      #{$bl}__button {
-        opacity: 1;
-      }
-    }
-  }
-
-  &__target-area {
-    overflow-y: auto;
-    flex-grow: 1;
-
-    min-width: 224px;
-    max-width: 380px;
-    height: 1px;
-    padding-right: 8px;
-    padding-bottom: 30px;
-    padding-left: 8px;
-
-    @media (min-width: 1500px) {
-      min-width: 244px;
-    }
-  }
-
-  &__task {
-    display: block;
-
-    width: 100%;
-    margin-top: 16px;
-  }
-
-  &__button {
-    margin: 0;
-    padding: 0;
-
-    transition: opacity 0.3s;
-    transform: scale(0.8);
-
-    opacity: 0;
-    border: none;
-    outline: none;
-    background-color: transparent;
-  }
-
-  &__update {
-    margin-right: 5px;
-    margin-left: 5px;
-  }
-}
-
-.task {
-  $bl: ".task";
-
-  display: flex;
-  flex-wrap: wrap;
-
-  padding: 8px;
-
-  cursor: pointer;
-
-  border-radius: 6px;
-  background-color: $white-900;
-  box-shadow: 0 4px 8px $shadow-500;
-
-  &--backlog {
-    box-shadow: none;
-
-    #{$bl}__title {
-      order: -2;
-
-      max-width: 290px;
-      margin-top: 0;
-      margin-right: auto;
-    }
-
-    #{$bl}__statuses {
-      order: -1;
-
-      margin-left: 20px;
-    }
-  }
-
-  &__user {
-    @include m-s10-h21;
-
-    display: flex;
-    align-items: center;
-
-    max-width: 80%;
-    margin-right: auto;
-  }
-
-  &__avatar {
-    margin-right: 4px;
-
-    img {
-      display: block;
-
-      width: 20px;
-      height: 20px;
-    }
-  }
-
-  &__statuses {
-    display: flex;
-    align-items: center;
-    align-self: flex-start;
-
-    height: 16px;
-    margin-top: 3px;
-  }
-
-  &__status {
-    margin-left: 8px;
-
-    border-radius: 50%;
-
-    &:first-child {
-      margin-left: 0;
-    }
-
-    &--color {
-      width: 8px;
-      height: 8px;
-    }
-
-    &--green {
-      background-color: $green-600;
-    }
-
-    &--orange {
-      background-color: $orange-600;
-    }
-
-    &--red {
-      background-color: $red-600;
-    }
-
-    &--time {
-      width: 16px;
-      height: 16px;
-
-      background-image: url("@/assets/img/status-time.svg");
-      background-repeat: no-repeat;
-      background-size: cover;
-    }
-
-    &--alert {
-      width: 16px;
-      height: 16px;
-
-      background-image: url("@/assets/img/status-alert.svg");
-      background-repeat: no-repeat;
-      background-size: cover;
-    }
-  }
-
-  &__title {
-    @include r-s14-h21;
-
-    width: 100%;
-    margin-top: 9px;
-    margin-bottom: 0;
-  }
-
-  &__tags {
-    @include clear-list;
-
-    display: flex;
-    flex-wrap: wrap;
-
-    width: 100%;
-    margin-top: 5px;
-
-    li {
-      margin-top: 4px;
-      margin-right: 4px;
-    }
-  }
-}
-
-.tag {
-  @include r-s10-h12;
-
-  padding: 4px 8px;
-
-  border-radius: 100px;
-
-  &--pink {
-    background-color: $pink-300;
-  }
-
-  &--orange {
-    background-color: $yellow-300;
-  }
-
-  &--green {
-    background-color: $green-100;
-  }
-
-  &--yellow {
-    background-color: $yellow-100;
-  }
-
-  &--blue {
-    background-color: $blue-300;
-  }
-
-  &--violet {
-    background-color: $pink-200;
-  }
+.active {
+  border: 1px solid $blue-600;
+  border-radius: 50%;
+  outline: none;
+  background-color: transparent;
 }
 </style>
