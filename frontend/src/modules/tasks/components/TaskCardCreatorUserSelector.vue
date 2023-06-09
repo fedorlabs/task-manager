@@ -44,7 +44,7 @@
 <script setup>
 import users from "@/mocks/users.json";
 import { ref, computed } from "vue";
-import { getImage } from "../../../common/helpers";
+import { getImage } from "@/common/helpers";
 import AppIcon from "@/common/components/AppIcon.vue";
 
 const props = defineProps({

@@ -20,6 +20,7 @@ watch(
       if (meta.layout) {
         // Пробуем найти компонент из свойства meta и динамически импортировать его
         const component = await import(`./${meta.layout}.vue`);
+        // Если импортированный модуль содержит только одно значение, это значение будет доступно через свойство default.
         layout.value = component?.default || AppLayoutDefault;
       } else {
         layout.value = AppLayoutDefault;

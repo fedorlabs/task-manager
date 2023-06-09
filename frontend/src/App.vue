@@ -70,13 +70,11 @@ const filteredTasks = computed(() => {
   });
 });
 
-// Обновить сортировку задач
 function updateTasks(tasksToUpdate) {
   tasksToUpdate.forEach((task) => {
     const index = state.tasks.findIndex(({ id }) => id === task.id);
-    // findIndex вернет элемент массива или -1
     // Используем bitwise not для определения если index === -1
-    // ~-1 вернет 0, а значит false
+    // ~-1 вернет 0
     if (~index) {
       state.tasks.splice(index, 1, task);
     }
@@ -84,10 +82,10 @@ function updateTasks(tasksToUpdate) {
 }
 
 function applyFilters({ item, entity }) {
-  console.log(item, entity);
   if (!Array.isArray(state.filters[entity])) {
     state.filters[entity] = item;
   } else {
+    // подготавливаем массив для реактивности
     const resultValues = [...state.filters[entity]];
     const itemIndex = resultValues.findIndex((el) => el === item);
     ~itemIndex ? resultValues.splice(itemIndex, 1) : resultValues.push(item);
@@ -117,10 +115,6 @@ function addTask(task) {
   state.tasks = [...state.tasks, newTask];
 }
 
-/**
- * Производим замену элемента новыми данными
- * @param task
- */
 function editTask(task) {
   const index = state.tasks.findIndex(({ id }) => task.id === id);
   if (~index) {
