@@ -28,14 +28,14 @@
             </div>
 
             <div class="backlog__counter">
-              {{ sidebarTasks.length }}
+              {{ tasksStore.sidebarTasks.length }}
             </div>
           </div>
 
           <div class="backlog__target-area">
             <!--  Задачи в беклоге-->
             <task-card
-              v-for="task in sidebarTasks"
+              v-for="task in tasksStore.sidebarTasks"
               :key="task.id"
               :task="task"
               class="backlog__task"
@@ -49,51 +49,28 @@
 </template>
 
 <script setup>
-import { reactive, computed } from "vue";
+import { reactive } from "vue";
 import AppDrop from "@/common/components/AppDrop.vue";
 import TaskCard from "@/modules/tasks/components/TaskCard.vue";
 import { getTargetColumnTasks, addActive } from "@/common/helpers";
+import { useTasksStore } from "@/stores/tasks";
 
-const props = defineProps({
-  tasks: {
-    type: Array,
-    required: true,
-  },
-});
+const tasksStore = useTasksStore();
 
 const state = reactive({ backlogIsHidden: false });
 
-/**
- * Фильтруем задачи, которые относятся к sidebur, у них (columnId === null) и сортируем
- * @type {ComputedRef<any[]>}
- */
-const sidebarTasks = computed(() => {
-  return props.tasks
-    .filter((task) => !task.columnId)
-    .sort((a, b) => a.sortOrder - b.sortOrder);
-});
-
-const emits = defineEmits(["updateTasks"]);
-
-/**
- * Moves a task in the task list and (emit 'updateTasks')
- * @todo - подумать над обратным перемещением карточки сверху вниз
- * @param active obj - выбранная задача
- * @param toTask Proxy - то, куда отпустили задачу, может не быть
- */
 function moveTask(active, toTask) {
-  console.log(active, toTask);
   // Не обновляем массив если задача фактически не перемещалась
   if (toTask && active.id === toTask.id) {
     return;
   }
 
   const toColumnId = null;
-  // Получить лист задач где (toColumnId = null)
-  const targetColumnTasks = getTargetColumnTasks(toColumnId, props.tasks);
+  // Получить задачи для текущей колонки
+  const targetColumnTasks = getTargetColumnTasks(toColumnId, tasksStore.tasks);
   // Копируем перемещаемую задачу c (toColumnId = null)
   const activeClone = { ...active, columnId: toColumnId };
-  // Перемещаем активную задачу по списку задач
+  // Добавить активную задачу в колонку
   const resultTasks = addActive(activeClone, toTask, targetColumnTasks);
   const tasksToUpdate = [];
 
@@ -105,9 +82,7 @@ function moveTask(active, toTask) {
       tasksToUpdate.push(newTask);
     }
   });
-
-  // Обновление в списке tasks
-  emits("updateTasks", tasksToUpdate);
+  tasksStore.updateTasks(tasksToUpdate);
 }
 </script>
 

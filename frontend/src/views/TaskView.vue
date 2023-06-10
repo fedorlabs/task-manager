@@ -108,16 +108,12 @@ import { useTaskCardDate } from "@/common/composables";
 import TaskCardViewTicksList from "../modules/tasks/components/TaskCardViewTicksList.vue";
 import TaskCardTags from "../modules/tasks/components/TaskCardTags.vue";
 import TaskCardViewComments from "../modules/tasks/components/TaskCardViewComments.vue";
+import { useTasksStore } from "@/stores";
 
-const router = useRouter(); // для использования маршрутизатора в приложении
-const route = useRoute(); // для получения информации о текущем маршруте и его параметрах.
+const tasksStore = useTasksStore();
 
-const props = defineProps({
-  tasks: {
-    type: Array,
-    required: true,
-  },
-});
+const router = useRouter();
+const route = useRoute();
 
 // Это делается для того, чтобы позже присвоить этой ссылке элемент DOM или компонент
 const dialog = ref(null);
@@ -132,8 +128,7 @@ onMounted(() => {
 
 // Найдем задачу по id из массива задач
 const task = computed(() => {
-  // id может быть как строкой так и числом
-  return props.tasks.find((task) => task.id === +route.params.id);
+  return tasksStore.tasks.find((task) => task.id === +route.params.id);
 });
 
 const dueDate = computed(() => {
