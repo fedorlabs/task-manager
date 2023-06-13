@@ -7,16 +7,16 @@
     @keydown.esc="closeDialog"
   >
     <section v-if="task" class="task-card__wrapper">
-      <!--Закрытие задачи-->
+      <!--Closing a task-->
       <button class="task-card__close" type="button" @click="closeDialog" />
-      <!--Шапка задачи-->
+      <!--Task header-->
       <div class="task-card__block">
         <div class="task-card__row">
-          <!--Наименование задачи-->
+          <!--Task name-->
           <h1 class="task-card__name task-card__name--min">
             {{ task.title }}
           </h1>
-          <!--Кнопка редактирования задачи-->
+          <!--Task edit button-->
           <a
             v-if="authStore.getUserAttribute('isAdmin')"
             class="task-card__edit"
@@ -27,20 +27,20 @@
               })
             "
           >
-            Редактировать задачу
+            Edit task
           </a>
         </div>
-        <!--Дата создания задачи-->
+        <!--Task creation date-->
         <p class="task-card__date">
           {{ useTaskCardDate(task) }}
         </p>
       </div>
-      <!--Участник задачи и срок выполнения-->
+      <!--Task participant and due date-->
       <div class="task-card__block">
         <ul class="task-card__params">
-          <!--Участник задачи-->
+          <!--Task participant-->
           <li v-if="task && task.user">
-            Участник:
+            Participant:
             <div class="task-card__participant">
               <button type="button" class="task-card__user">
                 <img
@@ -51,42 +51,42 @@
               </button>
             </div>
           </li>
-          <!--Срок выполнения-->
+          <!--Deadline-->
           <li v-if="dueDate">
-            Срок:
+            Deadline:
             <button type="button" class="task-card__date-link">
               {{ dueDate }}
             </button>
           </li>
         </ul>
       </div>
-      <!--Описание задачи-->
+      <!--Task description-->
       <div class="task-card__block">
         <div v-if="task.description" class="task-card__description">
-          <h4 class="task-card__title">Описание</h4>
+          <h4 class="task-card__title">Description</h4>
           <p>{{ task.description }}</p>
         </div>
       </div>
-      <!--Дополнительная ссылка-->
+      <!--Additional Link-->
       <div v-if="task.url" class="task-card__block task-card__links">
-        <h4 class="task-card__title">Ссылки</h4>
+        <h4 class="task-card__title">Links</h4>
 
         <div class="task-card__links-item">
           <a :href="task.url" target="_blank">
-            {{ task.urlDescription || "ссылка" }}
+            {{ task.urlDescription || "reference" }}
           </a>
         </div>
       </div>
-      <!--Чеклист-->
+      <!--Checklist-->
       <div v-if="task.ticks && task.ticks.length" class="task-card__block">
         <task-card-view-ticks-list :ticks="task.ticks" disabled />
       </div>
-      <!--Метки-->
+      <!--Tags-->
       <div v-if="task.tags && task.tags.length" class="task-card__block">
-        <h4 class="task-card__title">Метки</h4>
+        <h4 class="task-card__title">Tags</h4>
         <task-card-tags :tags="task.tags" />
       </div>
-      <!--Комментарии-->
+      <!--Comments-->
       <task-card-view-comments
         v-if="authStore.isAuthenticated"
         class="task-card__comments"
@@ -99,8 +99,8 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { getReadableDate, getPublicImage } from "../common/helpers";
-import { useTaskCardDate } from "../common/composables";
+import { getReadableDate, getPublicImage } from "@/common/helpers";
+import { useTaskCardDate } from "@/common/composables";
 import TaskCardViewTicksList from "../modules/tasks/components/TaskCardViewTicksList.vue";
 import TaskCardTags from "../modules/tasks/components/TaskCardTags.vue";
 import TaskCardViewComments from "../modules/tasks/components/TaskCardViewComments.vue";
@@ -115,17 +115,17 @@ const route = useRoute();
 const dialog = ref(null);
 
 onMounted(() => {
-  // Фокусируем на диалоговом окне чтобы сработала клавиша esc без дополнительного клика на окне
+  // Focus on the dialog box so that the esc key is triggered without an additional click on the window
   dialog.value.focus();
 });
 
-// Найдем задачу по id из массива задач
+// Find the task by id from the array of tasks
 const task = computed(() => {
   return tasksStore.getTaskById(route.params.id);
 });
 
 if (!task.value) {
-  // Вернуть пользователя на главную страницу если задача не найдена
+  // Return the user to the main page if the task is not found
   router.push("/");
 }
 

@@ -1,8 +1,8 @@
 <template>
   <div class="task-card__check-list">
     <h4 class="task-card__title">
-      Чеклист
-      <!--Кнопка создания новой подзадачи-->
+      Checklist
+      <!--Button to create a new subtask-->
       <button
         v-if="!disabled"
         type="button"
@@ -10,7 +10,7 @@
         @click="$emit('createTick')"
       />
     </h4>
-    <!--Список подзадач-->
+    <!--List of subtasks-->
     <ul v-if="ticks.length" class="task-card__list">
       <li
         v-for="tick in ticks"
@@ -35,7 +35,7 @@
                 name="checkbox_name"
                 :value="tick.text"
                 max="64"
-                placeholder="Введите текст пункта"
+                placeholder="Enter the text of the paragraph"
                 @change="updateTick(tick, 'text', $event.target.value)"
               />
               <span v-else>{{ tick.text }}</span>

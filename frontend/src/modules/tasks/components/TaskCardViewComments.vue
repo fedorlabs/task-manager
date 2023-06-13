@@ -1,8 +1,8 @@
 <template>
   <div class="task-card__comments">
-    <h2 class="task-card__title">Комментарии</h2>
+    <h2 class="task-card__title">Comments</h2>
     <div class="comments">
-      <!--      Список комментариев-->
+      <!--      List of comments-->
       <ul class="comments__list">
         <li
           v-for="comment in comments"
@@ -22,12 +22,12 @@
         </li>
       </ul>
 
-      <!--      Блок добавления нового комментария-->
+      <!--      Block for adding a new comment-->
       <form v-if="user" action="#" class="comments__form" method="post">
         <app-textarea
           v-model="newComment"
           name="comment_text"
-          placeholder="Введите текст комментария"
+          placeholder="Enter the text of the comment"
           :error-text="validations.newComment.error"
         />
         <app-button
@@ -35,7 +35,7 @@
           :type="'submit'"
           @click.prevent="submit"
         >
-          Написать комментарий
+          Write a comment
         </app-button>
       </form>
     </div>
@@ -44,10 +44,7 @@
 
 <script setup>
 import { ref, computed, watch } from "vue";
-import {
-  validateFields,
-  clearValidationErrors,
-} from "@/common/validator";
+import { validateFields, clearValidationErrors } from "@/common/validator";
 import AppTextarea from "@/common/components/AppTextarea.vue";
 import AppButton from "@/common/components/AppButton.vue";
 import { getPublicImage } from "@/common/helpers";
@@ -77,7 +74,8 @@ const user = authStore.user;
 const comments = computed(() => {
   return commentsStore.getCommentsByTaskId(props.taskId);
 });
-// Отслеживаем значение поля комментария и очищаем ошибку при изменении
+
+// Track the value of the comment field and clear the error when changing
 watch(newComment, () => {
   if (validations.value.newComment.error) {
     clearValidationErrors(validations.value);
@@ -85,17 +83,17 @@ watch(newComment, () => {
 });
 
 const submit = async function () {
-  // Проверяем валидно ли поле комментария
+  // Check if the comment field is valid
   if (!validateFields({ newComment }, validations.value)) return;
-  // Создаем объект комментария
+  // Create a comment object
   const comment = {
     text: newComment.value,
     taskId: props.taskId,
     userId: user.id,
   };
-  // Создаем комментарий
+  // Creating a comment
   await commentsStore.addComment(comment);
-  // Очищаем поле комментария
+  // Clear the comment field
   newComment.value = "";
 };
 </script>

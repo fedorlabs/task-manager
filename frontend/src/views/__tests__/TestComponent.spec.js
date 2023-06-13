@@ -9,22 +9,22 @@ import router from "@/router";
 describe("TestComponent", () => {
   let wrapper, usersStore, tasksStore, columnsStore;
   beforeEach(async () => {
-    // Создаем экземпляр Pinia
+    // Create an instance of Pinia
     const pinia = createTestingPinia({
       createSpy: vi.fn,
       stubActions: false,
     });
-    // Создаем экземпляр компонента
+    // Create an instance of the component
     wrapper = mount(TestComponent, {
       global: {
-        plugins: [pinia, router], // добавляем Pinia и vue-router к компонент
+        plugins: [pinia, router], // add Pinia and vue-router to the component
       },
     });
-    // Создаем экземпляры хранилищ
+    // Create storage instances
     usersStore = useUsersStore();
     tasksStore = useTasksStore();
     columnsStore = useColumnsStore();
-    // Делаем изначальные запросы для заполнения хранилищ
+    // We make initial requests to fill the storages
     await usersStore.fetchUsers();
     await tasksStore.fetchTasks();
     await columnsStore.fetchColumns();
@@ -38,7 +38,7 @@ describe("TestComponent", () => {
   });
   it("should render add column button", () => {
     const addColumnButton = wrapper.find('[data-test="desk-add"]');
-    expect(addColumnButton.text()).toBe("Добавить столбец");
+    expect(addColumnButton.text()).toBe("Add column");
   });
   it("should trigger addColumn action", async () => {
     const addColumnButton = wrapper.find('[data-test="desk-add"]');
@@ -56,20 +56,20 @@ describe("TestComponent", () => {
   it("should should have initial columns", () => {
     const columns = wrapper.findAll('[data-test="desk-column-title"]');
     expect(columns.length).toBe(5);
-    expect(columns[0].text()).toBe("Запланировано");
-    expect(columns[1].text()).toBe("В работе");
-    expect(columns[2].text()).toBe("На проверке");
-    expect(columns[3].text()).toBe("Выполнено");
-    expect(columns[4].text()).toBe("На удаление");
+    expect(columns[0].text()).toBe("Scheduled");
+    expect(columns[1].text()).toBe("In work");
+    expect(columns[2].text()).toBe("Under review");
+    expect(columns[3].text()).toBe("Done");
+    expect(columns[4].text()).toBe("For removal");
   });
   it("should have tasks in the first column", () => {
     const firstColumn = wrapper.find('[data-test="column-target-area"]');
     const taskTitles = firstColumn.findAll('[data-test="task-title"]');
     expect(taskTitles.length).toBe(5);
-    expect(taskTitles[0].text()).toBe("Задача № 2");
-    expect(taskTitles[1].text()).toBe("Задача № 6");
-    expect(taskTitles[2].text()).toBe("Задача № 10");
-    expect(taskTitles[3].text()).toBe("Задача № 14");
-    expect(taskTitles[4].text()).toBe("Задача № 18");
+    expect(taskTitles[0].text()).toBe("Task № 2");
+    expect(taskTitles[1].text()).toBe("Task № 6");
+    expect(taskTitles[2].text()).toBe("Task № 10");
+    expect(taskTitles[3].text()).toBe("Task № 14");
+    expect(taskTitles[4].text()).toBe("Task № 18");
   });
 });

@@ -1,17 +1,17 @@
 <template>
-  <!--  Отслеживает перетаскивание задачи по событию drop-->
-  <!--  Если в компоненте  app-drop  есть список задач, который можно перетаскивать, то при броске задачи на этом компоненте будет возникать событие  drop, которое мы будем обрабатывать методом  moveTask-->
+  <!--  Tracks the dragging of a task on the drop event-->
+  <!--  If the app-drop component has a list of tasks that can be dragged, then when the task is dropped on this component, the drop event will occur, which we will process with the moveTask method-->
   <app-drop
     class="backlog"
     :class="{ 'backlog--hide': state.backlogIsHidden }"
     @drop="moveTask"
   >
-    <!--  Отвечает за открытие/закрытие беклога-->
+    <!--  Opening and closing the backlog-->
     <button
       class="backlog__title"
       @click="state.backlogIsHidden = !state.backlogIsHidden"
     >
-      <span> Бэклог </span>
+      <span> Backlog </span>
     </button>
     <div class="backlog__content">
       <div class="backlog__scroll">
@@ -28,7 +28,7 @@
           </div>
 
           <div class="backlog__target-area">
-            <!--  Задачи в беклоге-->
+            <!--  Tasks in the backlog-->
             <transition-group name="tasks">
               <div v-for="task in tasksStore.sidebarTasks" :key="task.id">
                 <task-card
@@ -63,21 +63,27 @@ const state = reactive({ backlogIsHidden: false });
 
 const userImage = getPublicImage(authStore.user.avatar);
 
+/**
+ * If the task was dragged to the backlog
+ *
+ * @param active obj - moved task
+ * @param toTask Proxy - task on which we drag another task (may not be)
+ */
 function moveTask(active, toTask) {
-  // Не обновляем массив если задача фактически не перемещалась
+  // Don't update the array if the task hasn't actually moved
   if (toTask && active.id === toTask.id) {
     return;
   }
 
   const toColumnId = null;
-  // Получить задачи для текущей колонки
+  // Get a backlog list of tasks
   const targetColumnTasks = getTargetColumnTasks(toColumnId, tasksStore.tasks);
   const activeClone = { ...active, columnId: toColumnId };
-  // Добавить активную задачу в колонку
+  // Move the active task in the list of tasks
   const resultTasks = addActive(activeClone, toTask, targetColumnTasks);
   const tasksToUpdate = [];
 
-  // Отсортировать задачи в колонке
+  // Sort tasks in a column
   resultTasks.forEach((task, index) => {
     if (task.sortOrder !== index || task.id === active.id) {
       const newTask = { ...task, sortOrder: index };

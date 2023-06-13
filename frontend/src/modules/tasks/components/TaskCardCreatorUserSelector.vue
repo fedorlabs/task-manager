@@ -1,6 +1,6 @@
 <template>
   <li>
-    Участник:
+    Participant:
     <div class="task-card__participant">
       <button
         v-if="!modelValue"
@@ -8,7 +8,7 @@
         class="task-card__link"
         @click.stop="isMenuOpened = !isMenuOpened"
       >
-        добавить пользователя
+        add user
       </button>
       <button v-else class="users-list__user">
         <img
@@ -43,7 +43,7 @@
 
 <script setup>
 import { ref, computed } from "vue";
-import { getPublicImage } from "../../../common/helpers";
+import { getPublicImage } from "@/common/helpers";
 import AppIcon from "@/common/components/AppIcon.vue";
 import { useUsersStore } from "@/stores";
 

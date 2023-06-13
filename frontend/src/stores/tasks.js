@@ -15,33 +15,34 @@ export const useTasksStore = defineStore("tasks", {
       );
 
       if (filtersAreEmpty) {
-        // Вернуть все задачи если фильтры не применены
+        // Return all tasks if no filters are applied
         return state.tasks;
       }
 
-      // Применить фильтр по поиску
+      // Apply search filter
       const searchFilter = (task) =>
         task.title
           .toLowerCase()
           .includes(filtersStore.filters.search.toLowerCase().trim());
 
-      // Применить фильтр по пользователям
+      // Apply filter by users
       const usersFilter = (task) =>
         filtersStore.filters.users.some((userId) => userId === task.userId);
 
-      // Применить фильтр по статусам
+      // Apply filter by statuses
       const statusesFilter = (task) =>
         filtersStore.filters.statuses.some(
           (el) => el === task.status || el === task.timeStatus
         );
 
-      // Обработать задачи в соответствии с фильтрами
+      // Process tasks according to filters
       return state.tasks.filter((task) => {
         let result = {
           search: searchFilter,
           users: usersFilter,
           statuses: statusesFilter,
         };
+        // If there are filters, then apply them
         return Object.entries(result).every(
           ([key, callback]) =>
             !filtersStore.filters[key].length || callback(task)
@@ -51,11 +52,11 @@ export const useTasksStore = defineStore("tasks", {
     getTaskById: (state) => (id) => {
       const ticksStore = useTicksStore();
       const usersStore = useUsersStore();
-      const task = state.tasks.find((task) => task.id == id);
+      const task = state.tasks.find((task) => +task.id === +id);
       if (!task) return null;
-      // Добавляем подзадачи
+      // Adding subtasks
       task.ticks = ticksStore.getTicksByTaskId(task.id);
-      // Добавляем пользователя
+      // Adding a user
       task.user = usersStore.users.find((user) => user.id === task.userId);
       return task;
     },
@@ -63,7 +64,7 @@ export const useTasksStore = defineStore("tasks", {
       const usersStore = useUsersStore();
       return usersStore.users.find((user) => user.id === id);
     },
-    // Фильтруем задачи, которые относятся к беклогу (columnId === null)
+    // Filter tasks that belong to the backlog (columnId === null)
     sidebarTasks: (state) => {
       return state.filteredTasks
         .filter((task) => !task.columnId)
@@ -72,29 +73,24 @@ export const useTasksStore = defineStore("tasks", {
   },
   actions: {
     async fetchTasks() {
-      // Получение данных из json файла будет заменено в последующих разделах
       this.tasks = await tasksService.fetchTasks();
     },
     updateTasks(tasksToUpdate) {
+      // Go through the current tasks in storage, if there is an index, then update
       tasksToUpdate.forEach(async (task) => {
         const index = this.tasks.findIndex(({ id }) => id === task.id);
-        // findIndex вернет элемент массива или -1
-        // Используем bitwise not для определения если index === -1
-        // ~-1 вернет 0, а значит false
+        // ~-1 return 0, then false
         if (~index) {
-          // Обновить порядок сортировки на сервере
           await tasksService.updateTask(task);
           this.tasks.splice(index, 1, task);
         }
       });
     },
     async addTask(task) {
-      // Добавляем задачу в конец списка задач в беклоге
+      // Add the task to the end of the task list in the backlog
       task.sortOrder = this.tasks.filter((task) => !task.columnId).length;
-      // Если задаче присвоен исполнитель, то добавляем объект юзера в задачу
-      // Это будет добавлено сервером позже
       const newTask = await tasksService.createTask(task);
-      // Добавляем задачу в массив
+      // Add a task to the array
       this.tasks = [...this.tasks, newTask];
       return newTask;
     },

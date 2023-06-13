@@ -14,23 +14,18 @@ import {
   useTicksStore,
 } from "./stores";
 
-// Определяем хранилища
+// Defining repositories
 const tasksStore = useTasksStore();
 const usersStore = useUsersStore();
 const columnsStore = useColumnsStore();
 const commentsStore = useCommentsStore();
 const ticksStore = useTicksStore();
 
-// Загрузка первоначальных данных
-// Загружаем задачи
+// Loading the initial data
 void tasksStore.fetchTasks();
-// Загружаем пользователей
 void usersStore.fetchUsers();
-// Загружаем колонки
 void columnsStore.fetchColumns();
-// Загружаем комментарии
 void commentsStore.fetchComments();
-// Загружаем подзадачи
 void ticksStore.fetchTicks();
 </script>
 

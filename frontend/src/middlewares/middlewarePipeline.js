@@ -1,15 +1,17 @@
+// set a handler function before each route navigation
 export default (router) => {
   router.beforeEach(async (to, from) => {
-    // Находим мидлвары в свойстве meta.middlewares маршрута, на который происходит доступ
+    // Finding middlewares in the meta.middlewares property of the selected route
     const middlewares = to.meta.middlewares;
-    // Если у маршрута нет мидлваров, переходим на страницу
+    // If the route has no middleware, then go to the page
     if (!middlewares) {
       return true;
     }
-    // Делаем перебор мидлваров
+    // Middlewares in block meta
     for (const middleware of middlewares) {
       const result = await middleware({ to, from });
-      // Если мидлвар возвращает объект или строку маршрута, прерываем цепочку и возвращаем результат
+      // If the middleware returns an object or a route string, then we break the chain and return the result
+      // Example of object {path:'/'}, this will redirect to the route /
       if (
         typeof result === "object" ||
         typeof result === "string" ||

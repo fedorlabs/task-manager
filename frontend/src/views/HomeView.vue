@@ -1,18 +1,18 @@
 <template>
   <main class="content">
     <section class="desk">
-      <!--      Отображение дочерних маршрутов-->
+      <!--      Display child routes-->
       <router-view />
-      <!--      Шапка доски-->
+      <!--      Desk header-->
       <div class="desk__header">
         <h1 class="desk__title">Design Coffee Lab</h1>
-        <!--        Добавили кнопку для добавления новой колонки-->
+        <!--        Added a button to add a new column-->
         <button class="desk__add" type="button" @click="columnsStore.addColumn">
           Добавить столбец
         </button>
         <div class="desk__filters">
           <div class="desk__user-filter">
-            <!--            Список пользователей-->
+            <!--            List of users-->
             <ul class="user-filter">
               <li
                 v-for="user in usersStore.users"
@@ -40,7 +40,7 @@
             </ul>
           </div>
           <div class="desk__meta-filter">
-            <!--            Список статусов-->
+            <!--            List of statuses-->
             <ul class="meta-filter">
               <li
                 v-for="{ value, label } in STATUSES"
@@ -65,9 +65,9 @@
           </div>
         </div>
       </div>
-      <!--      Колонки и задачи-->
+      <!--      Columns and Tasks-->
       <div v-if="columnsStore.columns.length" class="desk__columns">
-        <!--        Показываем колонки-->
+        <!--        Show columns-->
         <desk-column
           v-for="column in columnsStore.columns"
           :key="column.id"
@@ -76,8 +76,8 @@
           @delete="columnsStore.deleteColumn"
         />
       </div>
-      <!--      Пустая доска-->
-      <p v-else class="desk__emptiness">Пока нет ни одной колонки</p>
+      <!--      Empty desk-->
+      <p v-else class="desk__emptiness">There are no columns yet</p>
     </section>
   </main>
 </template>
@@ -85,10 +85,9 @@
 <script setup>
 import { STATUSES } from "@/common/constants";
 import DeskColumn from "@/modules/columns/components/DeskColumn.vue";
-import { getPublicImage } from "../common/helpers";
+import { getPublicImage } from "@/common/helpers";
 import { useUsersStore, useColumnsStore, useFiltersStore } from "@/stores";
 
-// Определяем хранилища
 const usersStore = useUsersStore();
 const columnsStore = useColumnsStore();
 const filtersStore = useFiltersStore();

@@ -1,22 +1,22 @@
 [
   {
     "id": 1,
-    "title": "Запланировано"
+    "title": "Scheduled"
   },
   {
     "id": 2,
-    "title": "В работе"
+    "title": "In work"
   },
   {
     "id": 3,
-    "title": "На проверке"
+    "title": "Under review"
   },
   {
     "id": 4,
-    "title": "Выполнено"
+    "title": "Done"
   },
   {
     "id": 5,
-    "title": "На удаление"
+    "title": "For removal"
   }
 ]

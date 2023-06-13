@@ -1,6 +1,6 @@
 <template>
   <div class="sign-form sign-in">
-    <!--    Шапка формы входа-->
+    <!--    Login form header-->
     <div class="sign-form__header">
       <router-link to="/" class="logo">
         <img
@@ -18,10 +18,10 @@
       />
     </div>
 
-    <h3 class="sign-form__title">Войти</h3>
-    <!--    Форма входа-->
+    <h3 class="sign-form__title">Login</h3>
+    <!--    Login form-->
     <form class="sign-form__shape" @submit.prevent="login">
-      <!--      Поле электронной почты-->
+      <!--      Email field-->
       <label class="sign-form__input">
         <app-input
           v-model="email"
@@ -32,22 +32,22 @@
           :error-text="validations.email.error"
         />
       </label>
-      <!--      Поле пароля-->
+      <!--      Password field-->
       <label class="sign-form__input">
         <app-input
           v-model="password"
           type="password"
           name="password"
           class="input"
-          placeholder="Пароль"
+          placeholder="Password"
           :error-text="validations.password.error"
         />
       </label>
-      <!--      Кнопка отправки формы-->
+      <!--      Form submit button-->
       <div class="sign-form__wrap">
-        <app-button class="button--primary" type="submit"> Войти </app-button>
+        <app-button class="button--primary" type="submit"> Login </app-button>
       </div>
-      <!--       Поле ошибок сервера-->
+      <!--       Server error field-->
       <div v-if="serverErrorMessage" class="server-error-message">
         {{ serverErrorMessage }}
       </div>
@@ -83,14 +83,20 @@ const validations = ref(setEmptyValidations());
 const serverErrorMessage = ref(null);
 
 watch(email, () => {
-  // Очищаем поля ошибок при вводе новых данных
-  if (serverErrorMessage.value) serverErrorMessage.value = null;
-  if (validations.value.email.error) clearValidationErrors(validations.value);
+  // Clearing error fields when entering new data
+  if (serverErrorMessage.value) {
+    serverErrorMessage.value = null;
+  }
+  if (validations.value.email.error) {
+    clearValidationErrors(validations.value);
+  }
 });
 
 watch(password, () => {
-  // Очищаем поля ошибок при вводе новых данных
-  if (serverErrorMessage.value) serverErrorMessage.value = null;
+  // Clearing error fields when entering new data
+  if (serverErrorMessage.value) {
+    serverErrorMessage.value = null;
+  }
   if (validations.value.password.error)
     clearValidationErrors(validations.value);
 });
@@ -104,14 +110,15 @@ async function login() {
   ) {
     return;
   }
+
   const responseMessage = await authStore.login(email.value, password.value);
-  // Проверяем если возвращается статус не "ок", то показываем ошибку сервера
+  // Check if the returned status is not "ok", then show the server error
   if (responseMessage !== "ok") {
     serverErrorMessage.value = responseMessage;
   } else {
-    // Получаем данные пользователя
+    // Getting user data
     await authStore.getMe();
-    // Если логин прошел без ошибок, перенаправляем на главную страницу
+    // If the login went through without errors, redirect to the main page
     await router.push("/");
   }
 }

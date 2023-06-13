@@ -1,19 +1,32 @@
 export default class FetchProvider {
+    // Errors
     interceptors = []
-    // Метод для добавления параметров запроса
-    computeQueryParams (query) {
-        if (!query) return ''
+
+    // Method for adding query parameters
+    computeQueryParams(query) {
+        if (!query) {
+            return ''
+        }
+        // For example this code translate to "?name=John&age=30&city=New+York"
+        // const query = {
+        //     name: 'John',
+        //     age: 30,
+        //     city: 'New York'
+        // };
         const queryParams = new URLSearchParams(query)
         return '?' + queryParams.toString()
     }
-    // Метод для конкретного запроса
-    request (options) {
+
+    // Method for a specific request
+    request(options) {
         const body = options.data ? JSON.stringify(options.data) : null
         return fetch(
+            // URL + path + query
             options.baseUrl + options.path + this.computeQueryParams(options.query),
-            { headers: options.headers, body, method: options.method }
+            {headers: options.headers, body, method: options.method}
         )
             .then((response) => {
+                // Response code not in range 200-299
                 if (!response.ok) {
                     return Promise.reject(response)
                 }
@@ -21,6 +34,7 @@ export default class FetchProvider {
             })
             .then((response) => {
                 if (response.status > 201) return Promise.resolve(response)
+                // Convert body to json format
                 return response.json()
             })
             .then((data) => {
@@ -31,8 +45,9 @@ export default class FetchProvider {
                 throw Error(message)
             })
     }
-    // Метод для добавления перехватчиков
-    addInterceptor (interceptor) {
+
+    addInterceptor(interceptor) {
+        // Interceptor has error
         if (interceptor && interceptor.onError) {
             this.interceptors.push(interceptor)
         } else {
@@ -40,11 +55,14 @@ export default class FetchProvider {
         }
         return this
     }
-    // Метод для обработки ошибок
-    async onError (response) {
+
+    // Error from Promise
+    async onError(response) {
         if (response.json) {
-            const { error } = await response.json()
-            const { message, statusCode } = error
+            // Retrieve values from an object and assign them to variables with appropriate names
+            const {error} = await response.json()
+            const {message, statusCode} = error
+            // If the interceptor object has an onError method, then it will be called with two arguments: statusCode and message.
             this.interceptors.forEach((interceptor) => {
                 if (interceptor.onError) {
                     interceptor.onError(statusCode, message)
@@ -56,19 +74,19 @@ export default class FetchProvider {
         }
     }
 
-    get (path, requestOptions) {
-        return this.request({ path, method: 'GET', ...requestOptions })
+    get(path, requestOptions) {
+        return this.request({path, method: 'GET', ...requestOptions})
     }
 
-    post (path, requestOptions) {
-        return this.request({ path, method: 'POST', ...requestOptions })
+    post(path, requestOptions) {
+        return this.request({path, method: 'POST', ...requestOptions})
     }
 
-    put (path, requestOptions) {
-        return this.request({ path, method: 'PUT', ...requestOptions })
+    put(path, requestOptions) {
+        return this.request({path, method: 'PUT', ...requestOptions})
     }
 
-    delete (path, requestOptions) {
-        return this.request({ path, method: 'DELETE', ...requestOptions })
+    delete(path, requestOptions) {
+        return this.request({path, method: 'DELETE', ...requestOptions})
     }
 }

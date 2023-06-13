@@ -4,10 +4,12 @@ import { useAuthStore } from "@/stores";
 const httpProvider = new FetchProvider();
 httpProvider.addInterceptor({
   onError: async (status) => {
-    // Если с сервиса приходит ошибка 401 Unauthorized, выполняем выход из системы
+    // If an error 401 Unauthorized comes from the service, then we log out of the system
     if (status === 401) {
       const authStore = useAuthStore();
-      if (authStore.isAuthenticated) await authStore.logout();
+      if (authStore.isAuthenticated) {
+        await authStore.logout();
+      }
     }
   },
 });

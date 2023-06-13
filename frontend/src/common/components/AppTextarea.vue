@@ -1,6 +1,5 @@
 <template>
   <div class="text-field">
-    <!--    Поле ввода текста-->
     <textarea
       :value="modelValue"
       :name="props.name"
@@ -10,7 +9,7 @@
       :required="props.required"
       @input="$emit('update:modelValue', $event.target.value)"
     />
-    <!--      Отображение ошибок валидации-->
+    <!--      Display validation errors-->
     <span v-if="showError" class="text-field__text">
       {{ errorText }}
     </span>

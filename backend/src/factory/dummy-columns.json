@@ -1,17 +1,17 @@
 [
   {
-    "title": "Запланировано"
+    "title": "Scheduled"
   },
   {
-    "title": "В работе"
+    "title": "In work"
   },
   {
-    "title": "На проверке"
+    "title": "Under review"
   },
   {
-    "title": "Выполнено"
+    "title": "Done"
   },
   {
-    "title": "На удаление"
+    "title": "For removal"
   }
 ]

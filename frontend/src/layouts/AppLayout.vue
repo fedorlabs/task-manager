@@ -12,22 +12,22 @@ import AppLayoutDefault from "./AppLayoutDefault.vue";
 const route = useRoute();
 const layout = shallowRef(null);
 
-// Наблюдаем за изменением маршрута
+// Watching the route change
 watch(
   () => route.meta,
   async (meta) => {
     try {
       if (meta.layout) {
-        // Пробуем найти компонент из свойства meta и динамически импортировать его
+        // Trying to find the component from the meta property and dynamically import it
         const component = await import(`./${meta.layout}.vue`);
-        // Если импортированный модуль содержит только одно значение, это значение будет доступно через свойство default.
+        // If the imported module contains only one value, that value will be available through the default property
         layout.value = component?.default || AppLayoutDefault;
       } else {
         layout.value = AppLayoutDefault;
       }
     } catch (e) {
       console.error(
-        "Динамический шаблон не найден. Установлен шаблон по-умолчанию.",
+        "Dynamic template not found. The default template is set.",
         e
       );
       layout.value = AppLayoutDefault;

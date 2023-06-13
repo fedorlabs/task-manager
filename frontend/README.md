@@ -1,34 +1,34 @@
 # Vue 3
 
-## Рекоммендации по настройке IDE
+## Recommendations for setting up the IDE
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.vscode-typescript-vue-plugin).
 
-## Установка зависимостей
+## Install dependencies
 
 ```sh
 npm install
 ```
 
-### Запуск проекта
+### Start project
 
 ```sh
 npm run dev
 ```
 
-### Сборка проекта
+### Build project
 
 ```sh
 npm run build
 ```
 
-### Запуск тестов с помощью [Vitest](https://vitest.dev/)
+### Run tests [Vitest](https://vitest.dev/)
 
 ```sh
 npm run test:unit
 ```
 
-### Линт с помощью [ESLint](https://eslint.org/)
+### Start lint [ESLint](https://eslint.org/)
 
 ```sh
 npm run lint

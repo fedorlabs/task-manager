@@ -1,6 +1,6 @@
 <template>
   <header class="header">
-    <!--    Логотип-->
+    <!--    Logo-->
     <div class="header__logo">
       <router-link to="/" class="logo">
         <img
@@ -11,14 +11,14 @@
         />
       </router-link>
     </div>
-    <!--    Поиск-->
+    <!--    Search-->
     <form action="#" class="header__search">
-      <!--      В данном случае, при вводе в поле поиска происходит событие input, и переменная $event будет содержать объект с информацией об этом событии input.-->
+      <!--      In this case, when you type in the search box, an input event occurs, and the event variable will contain an object with information about that input event.-->
       <input
         type="search"
         name="search"
         required
-        placeholder="Поиск"
+        placeholder="Search"
         @input="
           filtersStore.applyFilters({
             item: $event.target.value,
@@ -26,26 +26,26 @@
           })
         "
       />
-      <button type="submit">Найти</button>
+      <button type="submit">Search</button>
     </form>
-    <!--    Кнопка создания новой задачи-->
+    <!--    New task button-->
     <router-link
       v-if="authStore.getUserAttribute('isAdmin')"
       to="/tasks/create"
       class="header__create-task"
     >
-      Создать карточку
+      Create card
     </router-link>
-    <!--    Аватар пользователя-->
+    <!--    User avatar-->
     <a
       v-if="authStore.user"
       href="#"
       class="header__user"
       @click.stop="toggleUserMenu"
     >
-      <img :src="userImage" alt="Администратор" width="40" height="40" />
+      <img :src="userImage" alt="Administrator" width="40" height="40" />
     </a>
-    <!--    Панель пользователя-->
+    <!--    User panel-->
     <div
       v-if="isUserMenuOpened"
       v-click-outside="toggleUserMenu"
@@ -54,15 +54,16 @@
       <div class="user-menu">
         <img :src="userImage" width="56" height="56" alt="Администратор" />
         <span>{{ authStore.user.name }}</span>
-        <a href="#" class="user-menu__link" @click="logout">Выйти</a>
+        <a href="#" class="user-menu__link" @click="logout">Logout</a>
       </div>
     </div>
+    <!--    If authorized, do not show Login-->
     <a
       v-if="!authStore.isAuthenticated"
       class="header__login"
       @click="$router.push('/login')"
     >
-      Войти
+      Login
     </a>
   </header>
 </template>

@@ -2,6 +2,7 @@
   <div class="app_layout">
     <app-layout-header />
     <div class="content">
+      <!--      Sidebar only for authorized user-->
       <app-layout-sidebar v-if="authStore.isAuthenticated" />
       <slot />
     </div>

@@ -1,166 +1,59 @@
 <template>
   <li>
-    Участник:
-    <div class="task-card__participant">
-      <button
-        v-if="!modelValue"
-        type="button"
-        class="task-card__link"
-        @click.stop="isMenuOpened = !isMenuOpened"
-      >
-        добавить пользователя
-      </button>
-      <button v-else class="users-list__user">
-        <img
-          :src="getPublicImage(currentWorker.avatar)"
-          @click.stop="isMenuOpened = !isMenuOpened"
-        />
-        <span @click.stop="isMenuOpened = !isMenuOpened">
-          {{ currentWorker.name }}
-        </span>
-        <app-icon
-          class="icon--trash users-list__icon"
-          @click="$emit('update:modelValue', null)"
-        />
-      </button>
-      <div class="task-card__users">
-        <ul
-          v-if="isMenuOpened"
-          v-click-outside="hideUserMenu"
-          class="users-list"
-        >
-          <li v-for="user in usersStore.users" :key="user.id">
-            <button class="users-list__user" @click="setUser(user.id)">
-              <img :src="getPublicImage(user.avatar)" />
-              <span>{{ user.name }}</span>
-            </button>
-          </li>
-        </ul>
-      </div>
+    Deadline:
+    <div class="task-card__datepicker">
+      <date-picker
+        v-model="date"
+        input-format="dd:MM:yyyy"
+        :lower-limit="new Date()"
+      />
     </div>
   </li>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import { getPublicImage } from "../../../common/helpers";
-import AppIcon from "@/common/components/AppIcon.vue";
-import { useUsersStore } from "@/stores";
-
-const usersStore = useUsersStore();
+import DatePicker from "vue3-datepicker";
+import { computed } from "vue";
 
 const props = defineProps({
   modelValue: {
-    type: [String],
+    type: Date,
     default: null,
   },
 });
-const emits = defineEmits(["update:modelValue"]);
 
-const isMenuOpened = ref(false);
+const emit = defineEmits(["update:modelValue"]);
 
-const currentWorker = computed(() =>
-  usersStore.users.find(({ id }) => id === props.modelValue)
-);
-
-function setUser(id) {
-  emits("update:modelValue", id);
-  hideUserMenu();
-}
-
-function hideUserMenu() {
-  isMenuOpened.value = false;
-}
+const date = computed({
+  get() {
+    return props.modelValue;
+  },
+  set(value) {
+    emit("update:modelValue", value);
+  },
+});
 </script>
 
 <style lang="scss" scoped>
 @import "@/assets/scss/app.scss";
 
 .task-card {
-  &__participant {
-    display: inline-block;
+  &__datepicker {
+    margin-left: 5px;
 
-    margin-left: 10px;
+    &:deep(input) {
+      margin: 0;
+      padding: 0;
 
-    vertical-align: baseline;
-  }
-
-  &__users {
-    position: absolute;
-    z-index: 10;
-    top: 0;
-    right: 0;
-
-    display: block;
-
-    box-sizing: border-box;
-    width: 210px;
-
-    border-radius: 6px;
-    background-color: $white-900;
-    box-shadow: 0 4px 8px $shadow-500;
-  }
-}
-
-.users-list {
-  margin: 0;
-  padding: 8px;
-
-  list-style-type: none;
-
-  li {
-    margin-bottom: 10px;
-  }
-
-  &__user {
-    position: relative;
-
-    display: flex;
-    align-items: center;
-
-    width: 100%;
-    margin: 0;
-    padding: 0 23px 0 0;
-
-    cursor: pointer;
-    text-align: left;
-
-    border: 0;
-    outline: 0;
-    background-color: transparent;
-
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 400;
-    font-style: normal;
-    line-height: 16px;
-
-    img {
-      width: 30px;
-      height: 30px;
-      margin-right: 10px;
-
-      border-radius: 50%;
-    }
-
-    &:hover {
       text-decoration: none;
 
-      .users-list__icon {
-        opacity: 1;
-      }
+      color: $gray-900;
+      border: none;
+      outline: 0;
+      cursor: pointer;
+
+      @include r-s16-h21;
     }
-  }
-
-  &__icon {
-    position: absolute;
-    top: 50%;
-    right: 0;
-
-    transition: opacity $animationSpeed;
-    transform: translateY(-50%);
-
-    opacity: 0;
   }
 }
 </style>

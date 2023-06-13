@@ -1,22 +1,22 @@
 <template>
-  <!--    Компонент AppDrop отслеживает куда упала задача -->
+  <!--    AppDrop watch component where task dragged to -->
   <app-drop @drop="$emit('drop', $event)">
-    <!--      Компонент AppDrag определяет какая задача перемещается -->
+    <!--      The AppDrag component determines which task is being moved -->
     <app-drag :transfer-data="task">
       <div class="task" @click="router.push({ path: `/${task.id}` })">
-        <!--        Данный блок показывает пользователя, который работает над задачей-->
+        <!--        This block shows the user who is working on the task-->
         <div v-if="taskUser" class="task__user">
           <div class="task__avatar">
             <img
               :src="getPublicImage(taskUser.avatar)"
-              alt="Аватар пользователя"
+              alt="User's avatar"
               width="20"
               height="20"
             />
           </div>
           {{ taskUser.name }}
         </div>
-        <!--        Данный блок показавает статусы задачи-->
+        <!--        This block shows the statuses of the task-->
         <div class="task__statuses">
           <span
             v-if="task.status"
@@ -29,10 +29,14 @@
             :class="`task__status--${task.timeStatus}`"
           />
         </div>
-        <h5 class="task__title" :class="{ 'task__title--first': !task.user }">
+        <h5
+          class="task__title"
+          :class="{ 'task__title--first': !task.user }"
+          data-test="task-title"
+        >
           {{ task.title }}
         </h5>
-        <!--        Тэги задачи вынесены в отдельный компонент-->
+        <!--        Task tags are placed in a separate component-->
         <task-card-tags
           v-if="task.tags && task.tags.length"
           :tags="task.tags"

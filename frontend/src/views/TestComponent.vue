@@ -1,80 +1,87 @@
 <template>
   <main class="content">
     <section class="desk">
-      <!--      Отображение дочерних маршрутов-->
-      <router-view/>
-      <!--      Шапка доски-->
+      <!--      Display child routes-->
+      <router-view />
+      <!--      Desk header-->
       <div class="desk__header">
-        <h1
-            class="desk__title"
-            data-test="desk-title"
-        >
-          Design Coffee Lab
-        </h1>
-        <!--        Добавили кнопку для добавления новой колонки-->
+        <h1 class="desk__title" data-test="desk-title">Design Coffee Lab</h1>
+        <!--        Added a button to add a new column-->
         <button
-            class="desk__add"
-            type="button"
-            data-test="desk-add"
-            @click="columnsStore.addColumn"
+          class="desk__add"
+          type="button"
+          data-test="desk-add"
+          @click="columnsStore.addColumn"
         >
-          Добавить столбец
+          Add column
         </button>
 
         <div class="desk__filters">
           <div class="desk__user-filter">
-<!--            Список пользователей-->
+            <!--            List of users-->
             <ul class="user-filter">
               <li
-                  v-for="user in usersStore.users"
-                  :key="user.id"
-                  :title="user.name"
-                  data-test="user-filter"
-                  class="user-filter__item"
-                  :class="{ active: filtersStore.filters.users.some(id => id === user.id) }"
-                  @click="filtersStore.applyFilters({ item: user.id, entity: 'users' })"
+                v-for="user in usersStore.users"
+                :key="user.id"
+                :title="user.name"
+                data-test="user-filter"
+                class="user-filter__item"
+                :class="{
+                  active: filtersStore.filters.users.some(
+                    (id) => id === user.id
+                  ),
+                }"
+                @click="
+                  filtersStore.applyFilters({ item: user.id, entity: 'users' })
+                "
               >
                 <a class="user-filter__button">
                   <img
-                      :src="getPublicImage(user.avatar)"
-                      alt="Аватар юзера"
-                      width="24"
-                      height="24"
+                    :src="getPublicImage(user.avatar)"
+                    alt="User avatar"
+                    width="24"
+                    height="24"
                   />
                 </a>
               </li>
             </ul>
           </div>
           <div class="desk__meta-filter">
-            <!--            Список статусов-->
+            <!--            List of statuses-->
             <ul class="meta-filter">
               <li
-                  v-for="({ value, label }) in STATUSES"
-                  :key="value"
-                  data-test="status-filter"
-                  class="meta-filter__item"
-                  :class="{ active: filtersStore.filters.statuses.some(s => s === value) }"
-                  @click="filtersStore.applyFilters({ item: value, entity: 'statuses' })"
+                v-for="{ value, label } in STATUSES"
+                :key="value"
+                data-test="status-filter"
+                class="meta-filter__item"
+                :class="{
+                  active: filtersStore.filters.statuses.some(
+                    (s) => s === value
+                  ),
+                }"
+                @click="
+                  filtersStore.applyFilters({ item: value, entity: 'statuses' })
+                "
               >
                 <a
-                    class="meta-filter__status"
-                    :class="`meta-filter__status meta-filter__status--color meta-filter__status--${value}`"
-                    :title="label"
+                  class="meta-filter__status"
+                  :class="`meta-filter__status meta-filter__status--color meta-filter__status--${value}`"
+                  :title="label"
                 />
               </li>
             </ul>
           </div>
         </div>
       </div>
-      <!--      Колонки и задачи-->
+      <!--      Columns & Tasks-->
       <div v-if="columnsStore.columns.length" class="desk__columns">
-        <!--        Показываем колонки-->
+        <!--        Showing the columns-->
         <desk-column
-            v-for="column in columnsStore.columns"
-            :key="column.id"
-            :column="column"
-            @update="columnsStore.updateColumn"
-            @delete="columnsStore.deleteColumn"
+          v-for="column in columnsStore.columns"
+          :key="column.id"
+          :column="column"
+          @update="columnsStore.updateColumn"
+          @delete="columnsStore.deleteColumn"
         />
       </div>
     </section>
@@ -82,15 +89,15 @@
 </template>
 
 <script setup>
-import { useUsersStore, useColumnsStore, useFiltersStore } from '@/stores'
-import { getPublicImage } from '../common/helpers'
-import { STATUSES } from '../common/constants'
-import DeskColumn from '@/modules/columns/components/DeskColumn.vue'
+import { useUsersStore, useColumnsStore, useFiltersStore } from "@/stores";
+import { getPublicImage } from "@/common/helpers";
+import { STATUSES } from "@/common/constants";
+import DeskColumn from "@/modules/columns/components/DeskColumn.vue";
 
 // Определяем хранилища
-const usersStore = useUsersStore()
-const columnsStore = useColumnsStore()
-const filtersStore = useFiltersStore()
+const usersStore = useUsersStore();
+const columnsStore = useColumnsStore();
+const filtersStore = useFiltersStore();
 </script>
 
 <style lang="scss" scoped>

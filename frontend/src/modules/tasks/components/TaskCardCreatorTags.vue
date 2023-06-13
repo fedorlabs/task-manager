@@ -1,12 +1,12 @@
 <template>
-  <div className="task-card__tags">
-    <div className="task-card__tags--text">
-      Добавьте тэги, разделенные символом #
+  <div class="task-card__tags">
+    <div class="task-card__tags--text">
+      Add tags separated by a symbol #
     </div>
     <transition name="replace">
       <task-card-creator-tags-analyzer
         v-if="showAnalyzer"
-        class-name="task-card__tags-analyzer"
+        class="task-card__tags-analyzer"
         :tags="tags"
         @setTags="setTags"
       />
@@ -31,10 +31,10 @@ const timeout = ref(null);
 
 function setTags(tags, refresh) {
   if (refresh) {
-    // При обновлении тегов очищаем текущую строку
+    // When updating tags, clear the current line
     showAnalyzer.value = false;
     emits("setTags", tags);
-    // Обновляем анализатор за минимальное время
+    // Updating the analyzer in the shortest possible time
     timeout.value = setTimeout(() => {
       showAnalyzer.value = true;
       clearTimeout(timeout.value);

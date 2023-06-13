@@ -18,12 +18,12 @@ app.mount("#app")
 // Проверяем если пользователь уже вошел в систему
 const token = getToken()
 if (token) {
-    try {
-        const authStore = useAuthStore()
-        await authStore.getMe()
-        await router.push('/')
-    } catch (e) {
-        removeToken()
-        console.log(e)
-    }
+	try {
+		const authStore = useAuthStore()
+		await authStore.getMe()
+		await router.push('/')
+	} catch (e) {
+		removeToken()
+		console.log(e)
+	}
 }

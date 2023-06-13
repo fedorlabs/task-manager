@@ -91,7 +91,7 @@ export class UserController {
     try {
       return await this.userRepository.find();
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении юзеров');
+      throw new HttpErrors['400']('An error occurred while receiving users');
     }
   }
 
@@ -128,7 +128,7 @@ export class UserController {
       await this.userRepository.customUserCredentials(savedUser.id).create({password});
       return savedUser;
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при регистрации');
+      throw new HttpErrors['400']('An error occurred during registration');
     }
   }
 
@@ -158,7 +158,7 @@ export class UserController {
       const token = await this.jwtService.generateToken(userProfile);
       return {token};
     } catch {
-      throw new HttpErrors['400']('Логин и/или пароль неверны');
+      throw new HttpErrors['400']('The login and/or password are incorrect');
     }
   }
 
@@ -168,7 +168,7 @@ export class UserController {
     try {
       return await this.userRepository.findById(this.user[securityId]);
     } catch {
-      throw new HttpErrors['401']('Пользователь не авторизован');
+      throw new HttpErrors['401']('The user is not authorized');
     }
   }
 
@@ -179,7 +179,7 @@ export class UserController {
       this.response.status(204);
       return;
     } catch {
-      throw new HttpErrors['400']('Ошибка логаута');
+      throw new HttpErrors['400']('Logout error');
     }
   }
 }

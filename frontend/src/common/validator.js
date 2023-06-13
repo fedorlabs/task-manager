@@ -1,26 +1,26 @@
 import { emailRegex, urlRegex } from "./constants";
 import { isRef } from "vue";
 
-/**
- * isRef - используется для проверки, является ли значение ссылкой (ref) на другой элемент. Если да, то берется значение по этой ссылке. Это нужно для случаев, когда в форме используются связанные поля, и валидация одного поля зависит от значения другого.
- * @type {{required: {rule: ((function(*): *)|*), message: string}, email: {rule: (function(*): boolean|boolean), message: string}, url: {rule: (function(*): boolean|boolean), message: string}}}
- */
 const rules = {
   required: {
     rule: (value) => {
-      if (isRef(value)) return !!value.value.trim();
+      if (isRef(value)) {
+        // !! true or false
+        return !!value.value.trim();
+      }
       return !!value?.trim();
     },
-    message: "Поле обязательно для заполнения",
+    message: "Required field",
   },
   email: {
     rule: (value) => {
+      // convert to normal value and check on regex
       if (isRef(value)) {
         value = value.value;
       }
       return value ? emailRegex.test(String(value).toLowerCase()) : true;
     },
-    message: "Электронная почта имеет неверный формат",
+    message: "Email is not in the correct format",
   },
   url: {
     rule: (value) => {
@@ -29,27 +29,25 @@ const rules = {
       }
       return value ? urlRegex.test(value) : true;
     },
-    message: "Ссылка имеет неверный формат",
+    message: "The link is in the wrong format",
   },
 };
 
 /**
+ * Compare by rules
  *
- * @param value - строка для проверки
- * @param appliedRules - массив имён правил валидации
+ * @param { String } value - exp. value login, value password
+ * @param { String[] } appliedRules - exp. email, require
  * @returns {string}
  */
 const validate = (value, appliedRules) => {
   let error = "";
-  // Для каждого правила он проверяет, есть ли оно в объекте rules
-  // Если правило есть, он извлекает из него функцию валидации rule и сообщение об ошибке message
-  // Он вызывает функцию валидации rule, передавая ей value
-  // Если функция вернет false, то error будет присвоено сообщение об ошибке для этого правила
-  // В конце возвращается либо пустая строка, либо сообщение об ошибке
+  // has in rules
   appliedRules.forEach((appliedRule) => {
     if (!rules[appliedRule]) {
       return;
     }
+    // get methods
     const { rule, message } = rules[appliedRule];
     if (!rule(value)) {
       error = message;
@@ -59,17 +57,28 @@ const validate = (value, appliedRules) => {
 };
 
 /**
- * @param fields - объект с полями для валидации, например { myText: 'abc', myEmail: 'email@example.com' }.
- * @param validations - объект с правилами валидаций
+ * Validation start
+ *
+ * @param fields - object from form
  * {
- * 	myText: {
- * 		error: '', - будет записана ошибка валидации
- * 		rules: ['required'] - содержит правила валидации для конкретного поля.
- * 	},
- *   	myEmail: {
- * 		error: '',
- * 		rules: ['required', 'email']
- * 	}
+ *     "email": "adm@mail.com",
+ *     "password": "123"
+ * }
+ * @param validations proxy with validation rules
+ * {
+ *     "email": {
+ *         "error": "",
+ *         "rules": [
+ *             "required",
+ *             "email"
+ *         ]
+ *     },
+ *     "password": {
+ *         "error": "",
+ *         "rules": [
+ *             "required"
+ *         ]
+ *     }
  * }
  * @returns {boolean}
  */
@@ -85,11 +94,11 @@ export const validateFields = (fields, validations) => {
 };
 
 /**
- * Функция для очистки ошибок валидации
+ * Clean up validation errors
+ *
  * @param validations
  */
 export const clearValidationErrors = (validations) => {
-  console.log("validate");
   if (!validations) {
     return;
   }

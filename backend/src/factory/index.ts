@@ -44,7 +44,7 @@ export default async function load(app: Application) {
     await populateColumns(column, await app.getRepository(ColumnsRepository))
   }
 
-  const possibleTags = ['Срочно', 'Дизайн', 'Для верстки', 'Фронтенд', 'Бекэнд', 'Не горит']
+  const possibleTags = ['Urgently', 'Design', 'HTML', 'Frontend', 'Backend', 'Does not burn']
 
   const getRandomNumber = (min: number, max: number) => Math.floor(Math.random() * (max - min) ) + min
 

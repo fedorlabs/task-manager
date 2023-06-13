@@ -1,44 +1,46 @@
-import { it, afterEach, describe, beforeEach, expect } from 'vitest'
-import '@/stores/__tests__/mockServices'
-// Из-за того, что vi.mock всплывает на самый верх файла, у него нет доступа к глобальным переменным
-// Поэтому важно делать импорт до использования основными файлами
-import { createPinia, setActivePinia } from 'pinia'
-import { useColumnsStore } from '@/stores'
+import { it, describe, beforeEach, expect } from "vitest";
+import "@/stores/__tests__/mockServices";
+// Due to the fact that vi.mock pops up to the very top of the file, it does not have access to global variables
+// Therefore, it is important to import before using the main files
+import { createPinia, setActivePinia } from "pinia";
+import { useColumnsStore } from "@/stores";
 
-describe('columns store', () => {
-	let columnsStore
-	beforeEach(async () => {
-		// Определяем Pinia
-		setActivePinia(createPinia())
-		columnsStore = useColumnsStore()
-		await columnsStore.fetchColumns()
-	})
-	it('should have initial columns', async () => {
-		// Количество загруженных колонок должно соответствовать количеству в нашем файле columns.json
-		expect(columnsStore.columns.length).toBe(5)
-	})
-	it('should add a new column', async () => {
-		// В данном тесте нам не важно что мы отправляем на сервер, важно какой результат нам отдаст mockStore.js
-		await columnsStore.addColumn({ title: 'Новая колонка' })
-		const columnsLength = columnsStore.columns.length
-		// Проверяем что количество колонок увеличилось на одну
-		expect(columnsLength).toBe(6)
-		// id новой колонки должно быть 6 (как мы определили в файле mockStore.js)
-		expect(columnsStore.columns[columnsLength - 1].id).toBe(6)
-	})
-	it('should update column', async () => {
-		const newTitle = 'Наша новая колонка'
-		await columnsStore.updateColumn({ id: 1, title: newTitle })
-		// Проверяем что у нас все еще 6 элементов (5 изначально и один добавлен в предыдущем тесте)
-		expect(columnsStore.columns.length).toBe(5)
-		// Проверяем что изменилось название первой колонки
-		expect(columnsStore.columns[0].title).toBe(newTitle)
-	})
-	it('should delete column', async () => {
-		await columnsStore.deleteColumn(5)
-		// Проверяем что количество уменьшилось на одну колонку
-		expect(columnsStore.columns.length).toBe(4)
-		// Проверяем что колонки с id = 5 не существует
-		expect(columnsStore.columns.find(column => column.id == 5)).toBeUndefined()
-	})
-})
+describe("columns store", () => {
+  let columnsStore;
+  beforeEach(async () => {
+    // Defining Pinia
+    setActivePinia(createPinia());
+    columnsStore = useColumnsStore();
+    await columnsStore.fetchColumns();
+  });
+  it("should have initial columns", async () => {
+    // The number of columns loaded should match the number in our columns.json file
+    expect(columnsStore.columns.length).toBe(5);
+  });
+  it("should add a new column", async () => {
+    // In this test, it doesn't matter what we send to the server, it's important what result mockStore will give us.js
+    await columnsStore.addColumn({ title: "Новая колонка" });
+    const columnsLength = columnsStore.columns.length;
+    // Check that the number of columns has increased by one
+    expect(columnsLength).toBe(6);
+    // the id of the new column should be 6 (as we defined in the mockStore file.js)
+    expect(columnsStore.columns[columnsLength - 1].id).toBe(6);
+  });
+  it("should update column", async () => {
+    const newTitle = "Our new column title";
+    await columnsStore.updateColumn({ id: 1, title: newTitle });
+    // We check that we still have 6 elements (5 initially and one added in the previous test)
+    expect(columnsStore.columns.length).toBe(5);
+    // Check that the name of the first column has changed
+    expect(columnsStore.columns[0].title).toBe(newTitle);
+  });
+  it("should delete column", async () => {
+    await columnsStore.deleteColumn(5);
+    // Check that the number has decreased by one column
+    expect(columnsStore.columns.length).toBe(4);
+    // Check that the column with id = 5 does not exist
+    expect(
+      columnsStore.columns.find((column) => column.id == 5)
+    ).toBeUndefined();
+  });
+});
