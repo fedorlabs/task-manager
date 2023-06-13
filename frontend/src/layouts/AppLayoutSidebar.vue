@@ -29,13 +29,15 @@
 
           <div class="backlog__target-area">
             <!--  Задачи в беклоге-->
-            <task-card
-              v-for="task in tasksStore.sidebarTasks"
-              :key="task.id"
-              :task="task"
-              class="backlog__task"
-              @drop="moveTask($event, task)"
-            />
+            <transition-group name="tasks">
+              <div v-for="task in tasksStore.sidebarTasks" :key="task.id">
+                <task-card
+                  :task="task"
+                  class="backlog__task"
+                  @drop="moveTask($event, task)"
+                />
+              </div>
+            </transition-group>
           </div>
         </div>
       </div>
@@ -70,7 +72,6 @@ function moveTask(active, toTask) {
   const toColumnId = null;
   // Получить задачи для текущей колонки
   const targetColumnTasks = getTargetColumnTasks(toColumnId, tasksStore.tasks);
-  // Копируем перемещаемую задачу c (toColumnId = null)
   const activeClone = { ...active, columnId: toColumnId };
   // Добавить активную задачу в колонку
   const resultTasks = addActive(activeClone, toTask, targetColumnTasks);
@@ -79,7 +80,6 @@ function moveTask(active, toTask) {
   // Отсортировать задачи в колонке
   resultTasks.forEach((task, index) => {
     if (task.sortOrder !== index || task.id === active.id) {
-      // Обновить задачу и добавить ее в массив tasksToUpdate
       const newTask = { ...task, sortOrder: index };
       tasksToUpdate.push(newTask);
     }
@@ -260,5 +260,17 @@ function moveTask(active, toTask) {
     margin-bottom: 11px;
     margin-left: 12px;
   }
+}
+
+.tasks-enter-active,
+.tasks-leave-active {
+  transition: all $animationSpeed ease;
+}
+
+.tasks-enter,
+.tasks-leave-to {
+  transform: scale(1.1);
+
+  opacity: 0;
 }
 </style>
