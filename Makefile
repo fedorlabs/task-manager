@@ -9,7 +9,7 @@ rebuild_backend:
 
 start_project:
 	docker compose down -v
-	docker compose up --build
+	docker compose up --build -d
 
 run_server:
 	docker compose down -v
