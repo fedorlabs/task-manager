@@ -36,7 +36,7 @@ export class ColumnsTasksController {
     try {
       return await this.columnsRepository.tasks(id).find(filter);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении задач');
+      throw new HttpErrors['400']('An error occurred while retrieving tasks');
     }
   }
 
@@ -66,7 +66,7 @@ export class ColumnsTasksController {
     try {
       return await this.columnsRepository.tasks(id).create(tasks);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при создании задачи');
+      throw new HttpErrors['400']('An error occurred while creating the task');
     }
   }
 
@@ -93,7 +93,7 @@ export class ColumnsTasksController {
     try {
       return await this.columnsRepository.tasks(id).patch(tasks, where);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при обновлении задачи');
+      throw new HttpErrors['400']('An error occurred while updating the task');
     }
   }
 
@@ -112,7 +112,7 @@ export class ColumnsTasksController {
     try {
       return await this.columnsRepository.tasks(id).delete(where);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при удалении задачи');
+      throw new HttpErrors['400']('An error occurred while deleting a task');
     }
   }
 }

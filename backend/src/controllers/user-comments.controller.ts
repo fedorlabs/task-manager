@@ -36,7 +36,7 @@ export class UserCommentsController {
     try {
       return await this.userRepository.comments(id).find(filter);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении комментариев');
+      throw new HttpErrors['400']('Error retrieving comments');
     }
   }
 
@@ -66,7 +66,7 @@ export class UserCommentsController {
     try {
       return await this.userRepository.comments(id).create(comments);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при создании комментариев');
+      throw new HttpErrors['400']('Error creating comments');
     }
   }
 
@@ -93,7 +93,7 @@ export class UserCommentsController {
     try {
       return await this.userRepository.comments(id).patch(comments, where);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при обновлении комментариев');
+      throw new HttpErrors['400']('Error updating comments');
     }
   }
 
@@ -112,7 +112,7 @@ export class UserCommentsController {
     try {
       return await this.userRepository.comments(id).delete(where);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при удалении комментариев');
+      throw new HttpErrors['400']('Error deleting comments');
     }
   }
 }

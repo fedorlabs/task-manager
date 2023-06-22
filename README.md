@@ -1,6 +1,6 @@
 # «VueWork: Task Manager»
 
-![Иллюстрация к проекту](./presentation/main.png)
+![Illustration for the project](./presentation/main.png)
 
 ___
 
@@ -9,11 +9,11 @@ ___
 - NodeJS >= 16
 - GNU Make
 
-### Install project dependencies
+### 1. Install project dependencies
 
 `make install_project_dependencies`
 
-### Start project
+### 2. Start project
 
 `make start_project`
 
@@ -43,7 +43,3 @@ password: user@example.com
 ```
 
 You can change the user data in the file `backend/src/factory/users.json`
-
-### Launching and viewing the finished layout of the project
-
-`make install_template_dependencies`

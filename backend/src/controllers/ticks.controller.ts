@@ -45,7 +45,7 @@ export class TicksController {
     try {
       return await this.ticksRepository.create(ticks);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при создании тикса');
+      throw new HttpErrors['400']('Error creating ticks');
     }
   }
 
@@ -62,7 +62,7 @@ export class TicksController {
     try {
       return await this.ticksRepository.count(where);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении количества тиксов');
+      throw new HttpErrors['400']('Error retrieving ticks count');
     }
   }
 
@@ -85,7 +85,7 @@ export class TicksController {
     try {
       return await this.ticksRepository.find(filter);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении тикса');
+      throw new HttpErrors['400']('Error retrieving ticks');
     }
   }
 
@@ -112,7 +112,7 @@ export class TicksController {
     try {
       return await this.ticksRepository.updateAll(ticks, where);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при обновлении тиксов');
+      throw new HttpErrors['400']('Error updating ticks');
     }
   }
 
@@ -135,7 +135,7 @@ export class TicksController {
     try {
       return await this.ticksRepository.findById(id, filter);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении тикса');
+      throw new HttpErrors['400']('Error retrieving ticks');
     }
   }
 
@@ -161,7 +161,7 @@ export class TicksController {
     try {
       await this.ticksRepository.updateById(id, ticks);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при обновлении тикса');
+      throw new HttpErrors['400']('Error updating ticks');
     }
   }
 
@@ -176,7 +176,7 @@ export class TicksController {
     try {
       await this.ticksRepository.replaceById(id, ticks);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при обновлении тикса');
+      throw new HttpErrors['400']('Error updating ticks');
     }
   }
 
@@ -191,7 +191,7 @@ export class TicksController {
     try {
       await this.ticksRepository.deleteById(id);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при удалении тикса');
+      throw new HttpErrors['400']('Error deleting ticks');
     }
   }
 }

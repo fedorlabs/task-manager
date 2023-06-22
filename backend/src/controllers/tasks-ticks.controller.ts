@@ -36,7 +36,7 @@ export class TasksTicksController {
     try {
       return await this.tasksRepository.ticks(id).find(filter);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении тиксов');
+      throw new HttpErrors['400']('Error retrieving ticks');
     }
   }
 
@@ -66,7 +66,7 @@ export class TasksTicksController {
     try {
       return await this.tasksRepository.ticks(id).create(ticks);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при создании тиксов');
+      throw new HttpErrors['400']('Error creating ticks');
     }
   }
 
@@ -93,7 +93,7 @@ export class TasksTicksController {
     try {
       return await this.tasksRepository.ticks(id).patch(ticks, where);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при обновлении тиксов');
+      throw new HttpErrors['400']('Error updating ticks');
     }
   }
 
@@ -112,7 +112,7 @@ export class TasksTicksController {
     try {
       return await this.tasksRepository.ticks(id).delete(where);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при удалении тиксов');
+      throw new HttpErrors['400']('Error deleting ticks');
     }
   }
 }

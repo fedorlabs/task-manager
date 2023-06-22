@@ -26,7 +26,7 @@ export class TicksTasksController {
     try {
       return await this.ticksRepository.task(id);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении задачи');
+      throw new HttpErrors['400']('Error retrieving tasks');
     }
   }
 }

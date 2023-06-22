@@ -33,7 +33,7 @@ export class ColumnsController {
     try {
       return await this.columnsRepository.create(columns);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при создании колонки');
+      throw new HttpErrors['400']('An error occurred while creating the column');
     }
   }
 
@@ -50,7 +50,7 @@ export class ColumnsController {
     try {
       return await this.columnsRepository.count(where);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении количества столбцов');
+      throw new HttpErrors['400']('An error occurred while retrieving the number of columns');
     }
   }
 
@@ -73,7 +73,7 @@ export class ColumnsController {
     try {
       return await this.columnsRepository.find(filter);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении столбцов');
+      throw new HttpErrors['400']('An error occurred while retrieving columns');
     }
   }
 
@@ -100,7 +100,7 @@ export class ColumnsController {
     try {
       return await this.columnsRepository.updateAll(columns, where);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при обновлении столбцов');
+      throw new HttpErrors['400']('An error occurred while updating columns');
     }
   }
 
@@ -123,7 +123,7 @@ export class ColumnsController {
     try {
       return await this.columnsRepository.findById(id, filter);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении столбца');
+      throw new HttpErrors['400']('An error occurred while retrieving a column');
     }
   }
 
@@ -149,7 +149,7 @@ export class ColumnsController {
     try {
       await this.columnsRepository.updateById(id, columns);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при обновлении столбца');
+      throw new HttpErrors['400']('An error occurred while updating the column');
     }
   }
 
@@ -164,7 +164,7 @@ export class ColumnsController {
     try {
       await this.columnsRepository.replaceById(id, columns);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при обновлении столбца');
+      throw new HttpErrors['400']('An error occurred while updating the column');
     }
   }
 
@@ -179,7 +179,7 @@ export class ColumnsController {
     try {
       await this.columnsRepository.deleteById(id);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при обновлении столбца');
+      throw new HttpErrors['400']('An error occurred while updating the column');
     }
   }
 }

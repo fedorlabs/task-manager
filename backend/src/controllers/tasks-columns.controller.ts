@@ -26,7 +26,7 @@ export class TasksColumnsController {
     try {
       return await this.tasksRepository.column(id);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении колонок');
+      throw new HttpErrors['400']('Error retrieving columns');
     }
   }
 }

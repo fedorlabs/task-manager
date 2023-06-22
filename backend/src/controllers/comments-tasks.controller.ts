@@ -26,7 +26,7 @@ export class CommentsTasksController {
     try {
       return await this.commentsRepository.task(id);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении задач');
+      throw new HttpErrors['400']('An error occurred while retrieving tasks');
     }
   }
 }

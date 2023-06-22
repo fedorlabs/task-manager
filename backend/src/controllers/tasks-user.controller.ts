@@ -26,7 +26,7 @@ export class TasksUserController {
     try {
       return await this.tasksRepository.user(id);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении юзера');
+      throw new HttpErrors['400']('Error retrieving user');
     }
   }
 }

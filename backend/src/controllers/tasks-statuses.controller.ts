@@ -26,7 +26,7 @@ export class TasksStatusesController {
     try {
       return await this.tasksRepository.status(id);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении статусов');
+      throw new HttpErrors['400']('Error retrieving statuses');
     }
   }
 }

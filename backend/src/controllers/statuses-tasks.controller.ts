@@ -36,7 +36,7 @@ export class StatusesTasksController {
     try {
       return await this.statusesRepository.tasks(id).find(filter);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении задач');
+      throw new HttpErrors['400']('Error retrieving tasks');
     }
   }
 
@@ -66,7 +66,7 @@ export class StatusesTasksController {
     try {
       return await this.statusesRepository.tasks(id).create(tasks);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при создании задач');
+      throw new HttpErrors['400']('Error creating tasks');
     }
   }
 
@@ -93,7 +93,7 @@ export class StatusesTasksController {
     try {
       return await this.statusesRepository.tasks(id).patch(tasks, where);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при обновлении задач');
+      throw new HttpErrors['400']('Error updating tasks');
     }
   }
 
@@ -112,7 +112,7 @@ export class StatusesTasksController {
     try {
       return await this.statusesRepository.tasks(id).delete(where);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при удалении задач');
+      throw new HttpErrors['400']('Error deleting tasks');
     }
   }
 }

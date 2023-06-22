@@ -46,7 +46,7 @@ export class StatusesController {
     try {
       return await this.statusesRepository.create(statuses);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при создании статуса');
+      throw new HttpErrors['400']('An error occurred while creating a status');
     }
   }
 
@@ -63,7 +63,7 @@ export class StatusesController {
     try {
       return await this.statusesRepository.count(where);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении количества статусов');
+      throw new HttpErrors['400']('An error occurred while retrieving the number of statuses');
     }
   }
 
@@ -86,7 +86,7 @@ export class StatusesController {
     try {
       return await this.statusesRepository.find(filter);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении статуса');
+      throw new HttpErrors['400']('An error occurred while obtaining the status');
     }
   }
 
@@ -113,7 +113,7 @@ export class StatusesController {
     try {
       return await this.statusesRepository.updateAll(statuses, where);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при обновлении статусов');
+      throw new HttpErrors['400']('An error occurred while updating statuses');
     }
   }
 
@@ -137,7 +137,7 @@ export class StatusesController {
     try {
       return await this.statusesRepository.findById(id, filter);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при поиске статуса');
+      throw new HttpErrors['400']('An error occurred while searching for a status');
     }
   }
 
@@ -163,7 +163,7 @@ export class StatusesController {
     try {
       await this.statusesRepository.updateById(id, statuses);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при обновлении статуса');
+      throw new HttpErrors['400']('An error occurred while updating the status');
     }
   }
 
@@ -179,7 +179,7 @@ export class StatusesController {
     try {
       await this.statusesRepository.replaceById(id, statuses);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при обновлении статуса');
+      throw new HttpErrors['400']('An error occurred while updating the status');
     }
   }
 
@@ -195,7 +195,7 @@ export class StatusesController {
     try {
       await this.statusesRepository.deleteById(id);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при удалении статуса');
+      throw new HttpErrors['400']('An error occurred while deleting the status');
     }
   }
 }

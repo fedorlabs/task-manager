@@ -50,7 +50,7 @@ export class TasksController {
       task.user = task.userId ? await this.userRepository.findById(task.userId) : null;
       return task;
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при создании задачи');
+      throw new HttpErrors['400']('Error creating task');
     }
   }
 
@@ -67,7 +67,7 @@ export class TasksController {
     try {
       return await this.tasksRepository.count(where);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении количества задач');
+      throw new HttpErrors['400']('Error retrieving tasks count');
     }
   }
 
@@ -90,7 +90,7 @@ export class TasksController {
     try {
       return await this.tasksRepository.find(filter);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении задачи');
+      throw new HttpErrors['400']('Error retrieving tasks');
     }
   }
 
@@ -117,7 +117,7 @@ export class TasksController {
     try {
       return await this.tasksRepository.updateAll(tasks, where);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при обновлении задач');
+      throw new HttpErrors['400']('Error updating tasks');
     }
   }
 
@@ -140,7 +140,7 @@ export class TasksController {
     try {
       return await this.tasksRepository.findById(id, filter);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении задачи');
+      throw new HttpErrors['400']('Error retrieving tasks');
     }
   }
 
@@ -166,7 +166,7 @@ export class TasksController {
     try {
       await this.tasksRepository.updateById(id, tasks);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при обновлении задачи');
+      throw new HttpErrors['400']('Error updating tasks');
     }
   }
 
@@ -181,7 +181,7 @@ export class TasksController {
     try {
       await this.tasksRepository.replaceById(id, tasks);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при обновлении задачи');
+      throw new HttpErrors['400']('Error updating task');
     }
   }
 
@@ -196,7 +196,7 @@ export class TasksController {
     try {
       await this.tasksRepository.deleteById(id);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при удалении задачи');
+      throw new HttpErrors['400']('Error deleting task');
     }
   }
 }

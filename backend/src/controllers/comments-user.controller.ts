@@ -26,7 +26,7 @@ export class CommentsUserController {
     try {
       return await this.commentsRepository.user(id);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении юзера');
+      throw new HttpErrors['400']('An error occurred while retrieving a user');
     }
   }
 }

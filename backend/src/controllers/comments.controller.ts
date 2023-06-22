@@ -45,7 +45,7 @@ export class CommentsController {
     try {
       return await this.commentsRepository.create(comments);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при создании комментария');
+      throw new HttpErrors['400']('An error occurred while creating a comment');
     }
   }
 
@@ -62,7 +62,7 @@ export class CommentsController {
     try {
       return await this.commentsRepository.count(where);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении количества комментариев');
+      throw new HttpErrors['400']('An error occurred while retrieving the number of comments');
     }
   }
 
@@ -85,7 +85,7 @@ export class CommentsController {
     try {
       return await this.commentsRepository.find(filter);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении комментария');
+      throw new HttpErrors['400']('An error occurred while retrieving a comment');
     }
   }
 
@@ -112,7 +112,7 @@ export class CommentsController {
     try {
       return await this.commentsRepository.updateAll(comments, where);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при обновлении комментариев');
+      throw new HttpErrors['400']('An error occurred while updating comments');
     }
   }
 
@@ -135,7 +135,7 @@ export class CommentsController {
     try {
       return await this.commentsRepository.findById(id, filter);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при получении комментария');
+      throw new HttpErrors['400']('An error occurred while retrieving a comment');
     }
   }
 
@@ -161,7 +161,7 @@ export class CommentsController {
     try {
       await this.commentsRepository.updateById(id, comments);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при обновлении комментария');
+      throw new HttpErrors['400']('An error occurred while updating the comment');
     }
   }
 
@@ -176,7 +176,7 @@ export class CommentsController {
     try {
       await this.commentsRepository.replaceById(id, comments);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при обновлении комментария');
+      throw new HttpErrors['400']('An error occurred while updating the comment');
     }
   }
 
@@ -191,7 +191,7 @@ export class CommentsController {
     try {
       await this.commentsRepository.deleteById(id);
     } catch {
-      throw new HttpErrors['400']('Возникла ошибка при удалении комментария');
+      throw new HttpErrors['400']('An error occurred while deleting the comment');
     }
   }
 }
