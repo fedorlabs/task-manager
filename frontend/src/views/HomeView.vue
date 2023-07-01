@@ -8,7 +8,7 @@
         <h1 class="desk__title">Design Coffee Lab</h1>
         <!--        Added a button to add a new column-->
         <button class="desk__add" type="button" @click="columnsStore.addColumn">
-          Добавить столбец
+          Add column
         </button>
         <div class="desk__filters">
           <div class="desk__user-filter">

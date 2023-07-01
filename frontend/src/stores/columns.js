@@ -13,7 +13,7 @@ export const useColumnsStore = defineStore("columns", {
     async addColumn() {
       // When creating a column, we add a default column, which we can change later
       const newColumn = await columnsService.createColumn({
-        title: "Новый столбец",
+        title: "New column",
       });
       this.columns.push(newColumn);
     },
