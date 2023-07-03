@@ -1,6 +1,8 @@
 # «VueWork: Task Manager»
 
 ![Illustration for the project](./presentation/main.png)
+![Illustration for the project](./presentation/task-view.png)
+![Illustration for the project](./presentation/task-edit.png)
 
 ___
 
