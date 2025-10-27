@@ -8,7 +8,7 @@ ___
 
 ## Requirements
 - Docker
-- NodeJS >= 16
+- NodeJS >= 18
 - GNU Make
 
 ### 1. Install project dependencies
@@ -23,11 +23,13 @@ ___
 
 ## Endpoints
 
-Server `localhost:3000`
+Server `localhost:3010`
 
-Client `localhost:8080`
+Client `localhost:8090`
 
-Documentation (OpenAPI)  `localhost:3000/explorer/`
+Database `localhost:5434`
+
+Documentation (OpenAPI)  `localhost:3010/explorer/`
 
 ___
 

@@ -28,3 +28,14 @@ install_frontend_dependencies:
 	npm ci
 
 install_dependencies: install_backend_dependencies install_frontend_dependencies
+
+update_frontend_dependencies:
+	cd frontend; echo "...Updating frontend dependencies" && \
+	npm update --save && \
+	npm update --save-dev
+
+rebuild_and_test:
+	docker compose down -v
+	docker compose up --build -d
+	sleep 5
+	cd frontend; npm run test:unit
