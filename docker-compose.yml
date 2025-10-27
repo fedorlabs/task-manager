@@ -7,7 +7,7 @@ services:
       POSTGRES_HOST_AUTH_METHOD: 'trust'
       POSTGRES_PASSWORD: psql
     ports:
-      - 5432:5432
+      - 5434:5432
 
   backend:
     build: ./backend
@@ -17,7 +17,7 @@ services:
     depends_on:
       - db
     ports:
-      - 3000:3000
+      - 3010:3000
 
   frontend:
     build:
@@ -28,6 +28,6 @@ services:
       PORT: '8080'
       HOST: '0.0.0.0'
     ports:
-      - '8080:8080'
+      - '8090:8080'
     volumes:
       - ./frontend:/frontend

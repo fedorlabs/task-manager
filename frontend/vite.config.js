@@ -13,6 +13,9 @@ export default defineConfig({
     // but only provides tools to emulate a browser environment.
     environment: "jsdom", // vitest
   },
+  build: {
+    target: "esnext", // Support for top-level await
+  },
   resolve: {
     alias: {
       // A built-in method in Node.js that is used to convert a URL object to a file path string on the file system

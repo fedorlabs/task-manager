@@ -10,23 +10,23 @@
   },
   "dependencies": {
     "lodash": "^4.17.21",
-    "pinia": "^2.0.14",
-    "vue": "^3.2.35",
-    "vue-router": "^4.0.15",
-    "vue3-datepicker": "^0.3.4"
+    "pinia": "^2.1.7",
+    "vue": "^3.5.22",
+    "vue-router": "^4.6.3",
+    "vue3-datepicker": "^0.3.8"
   },
   "devDependencies": {
-    "@pinia/testing": "^0.0.14",
-    "@rushstack/eslint-patch": "^1.1.3",
-    "@vitejs/plugin-vue": "^3.1.2",
-    "@vue/eslint-config-prettier": "^7.0.0",
-    "@vue/test-utils": "^2.0.0",
-    "eslint": "^8.16.0",
-    "eslint-plugin-vue": "^9.0.1",
-    "jsdom": "^19.0.0",
-    "prettier": "^2.6.2",
-    "sass": "^1.52.1",
-    "vite": "^3.1.8",
-    "vitest": "^0.12.7"
+    "@pinia/testing": "^0.1.2",
+    "@rushstack/eslint-patch": "^1.7.0",
+    "@vitejs/plugin-vue": "^5.0.4",
+    "@vue/eslint-config-prettier": "^9.0.0",
+    "@vue/test-utils": "^2.4.6",
+    "eslint": "^8.57.1",
+    "eslint-plugin-vue": "^9.31.0",
+    "jsdom": "^24.0.0",
+    "prettier": "^3.3.3",
+    "sass": "^1.83.0",
+    "vite": "^5.0.0",
+    "vitest": "^1.6.0"
   }
 }
