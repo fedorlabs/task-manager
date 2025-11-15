@@ -5,31 +5,51 @@ import { setToken, removeToken } from "@/services/token-manager";
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     user: null,
+    loading: false,
+    error: null,
   }),
-  // Functions that allow you to access the application's state from the current store.
-  // This means we can use getters to calculate values based on the current state.
+
   getters: {
-    isAuthenticated: (state) => !!state.user, // null => false
-    getUserAttribute: (state) => (attr) => state.user ? state.user[attr] : "",
+    isAuthenticated: (state) => !!state.user,
+    getUserAttribute: (state) => (attr) => state.user?.[attr] ?? "",
   },
-  // Methods that can be called to modify and update the data in this store
+
   actions: {
     async login(email, password) {
+      this.loading = true;
+      this.error = null;
       try {
         const data = await authService.login(email, password);
         setToken(data.token);
         return "ok";
       } catch (e) {
+        this.error = e.message;
         return e.message;
+      } finally {
+        this.loading = false;
       }
     },
+
     async getMe() {
-      this.user = await authService.whoAmI();
+      this.loading = true;
+      this.error = null;
+      try {
+        this.user = await authService.whoAmI();
+      } catch (e) {
+        this.user = null;
+        this.error = e.message;
+      } finally {
+        this.loading = false;
+      }
     },
+
     async logout() {
-      await authService.logout();
-      this.user = null;
-      removeToken();
+      try {
+        await authService.logout();
+      } finally {
+        this.user = null;
+        removeToken();
+      }
     },
   },
 });

@@ -1,0 +1,30 @@
+parameters:
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/Domain/Entity/'
+            - '../src/Kernel.php'
+
+    App\Domain\Repository\UserRepositoryInterface:
+        alias: App\Infrastructure\Doctrine\Repository\DoctrineUserRepository
+
+    App\Domain\Repository\TaskRepositoryInterface:
+        alias: App\Infrastructure\Doctrine\Repository\DoctrineTaskRepository
+
+    App\Domain\Repository\ColumnRepositoryInterface:
+        alias: App\Infrastructure\Doctrine\Repository\DoctrineColumnRepository
+
+    App\Domain\Repository\StatusRepositoryInterface:
+        alias: App\Infrastructure\Doctrine\Repository\DoctrineStatusRepository
+
+    App\Domain\Repository\CommentRepositoryInterface:
+        alias: App\Infrastructure\Doctrine\Repository\DoctrineCommentRepository
+
+    App\Domain\Repository\TickRepositoryInterface:
+        alias: App\Infrastructure\Doctrine\Repository\DoctrineTickRepository

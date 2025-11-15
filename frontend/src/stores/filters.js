@@ -6,32 +6,38 @@ export const useFiltersStore = defineStore("filters", {
     users: [],
     statuses: [],
   }),
+
   getters: {
-    filters: (state) => {
-      const { search, users, statuses } = state;
-      return {
-        search,
-        users,
-        statuses,
-      };
-    },
+    filters: (state) => ({
+      search: state.search,
+      users: state.users,
+      statuses: state.statuses,
+    }),
   },
+
   actions: {
     applyFilters({ item, entity }) {
       if (entity === "search") {
         this.search = item;
-      } else {
-        // select if isset
-        const resultValues = [...this[entity]];
-        // if we find an already added ID, then delete it, or add it to the array
-        const itemIndex = resultValues.findIndex((el) => el === item);
-        ~itemIndex
-          ? resultValues.splice(itemIndex, 1)
-          : resultValues.push(item);
-        // update state (new or exist entity and array values)
-        // to access a property of an object with a name stored in a variable, square brackets and the variable inside them are used.
-        this.$patch({ [entity]: resultValues });
+        return;
       }
+
+      const current = [...this[entity]];
+      const itemIndex = current.indexOf(item);
+
+      if (itemIndex !== -1) {
+        current.splice(itemIndex, 1);
+      } else {
+        current.push(item);
+      }
+
+      this.$patch({ [entity]: current });
+    },
+
+    resetFilters() {
+      this.search = "";
+      this.users = [];
+      this.statuses = [];
     },
   },
 });
