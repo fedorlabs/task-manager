@@ -1,4 +1,4 @@
-# «VueWork: Task Manager»
+# VueWork: Task Manager
 
 ![Illustration for the project](./presentation/main.png)
 ![Illustration for the project](./presentation/task-view.png)
@@ -8,14 +8,9 @@ ___
 
 ## Requirements
 - Docker
-- NodeJS >= 18
 - GNU Make
 
-### 1. Install project dependencies
-
-`make install_project_dependencies`
-
-### 2. Start project
+### 1. Start project
 
 `make start_project`
 
@@ -29,13 +24,26 @@ Client `localhost:8090`
 
 Database `localhost:5434`
 
-Documentation (OpenAPI)  `localhost:3010/explorer/`
-
 ___
+
+## Tech Stack
+
+- **Backend:** Symfony 7.1 (PHP 8.2) + Doctrine ORM + PostgreSQL
+- **Frontend:** Vue 3 + Pinia + Vue Router + Vite
+- **Auth:** JWT (lexik/jwt-authentication-bundle)
+
+## Architecture
+
+Backend uses clean architecture:
+
+- `Domain/` — entities, repository interfaces (no framework dependencies)
+- `Application/` — services with business logic
+- `Infrastructure/` — Doctrine repositories, data fixtures
+- `Controller/` — thin controllers, delegate to services
 
 ## Configurations
 
-Database connection configuration for the server in a file `backend/src/datasources/database.datasource.ts`
+Database connection is configured via environment variable `DATABASE_URL` in `backend/.env`
 
 ### Authorized user login
 
@@ -46,4 +54,15 @@ email: user@example.com
 password: user@example.com
 ```
 
-You can change the user data in the file `backend/src/factory/users.json`
+Seed data is defined in `backend/src/Infrastructure/DataFixtures/AppFixtures.php`
+
+## Makefile commands
+
+- `make start_project` — build and start all containers
+- `make run_server` — start backend only
+- `make run_tests` — run frontend unit tests
+- `make install_dependencies` — install backend + frontend deps
+- `make backend_shell` — open shell in backend container
+- `make db_migrate` — run database schema update
+- `make db_fixtures` — reload fixtures
+- `make cache_clear` — clear Symfony cache

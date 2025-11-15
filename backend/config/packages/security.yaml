@@ -1,0 +1,38 @@
+security:
+    password_hashers:
+        App\Domain\Entity\User:
+            algorithm: bcrypt
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Domain\Entity\User
+                property: email
+
+    firewalls:
+        login:
+            pattern: ^/login
+            stateless: true
+            json_login:
+                check_path: /login
+                username_path: email
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        api:
+            pattern: ^/
+            stateless: true
+            jwt: ~
+
+    access_control:
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/signup, roles: PUBLIC_ACCESS }
+        - { path: ^/users, roles: PUBLIC_ACCESS }
+        - { path: ^/columns, roles: PUBLIC_ACCESS }
+        - { path: ^/statuses, roles: PUBLIC_ACCESS }
+        - { path: ^/tasks, roles: PUBLIC_ACCESS }
+        - { path: ^/comments, roles: PUBLIC_ACCESS }
+        - { path: ^/ticks, roles: PUBLIC_ACCESS }
+        - { path: ^/whoAmI, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/logout, roles: IS_AUTHENTICATED_FULLY }

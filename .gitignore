@@ -1,4 +1,18 @@
 # IDE settings
 .idea
+.vscode
 .DS_Store
 */.DS_Store
+
+# Symfony backend
+backend/vendor/
+backend/var/
+backend/config/jwt/*.pem
+backend/.env.local
+backend/.env.*.local
+backend/.php-cs-fixer.cache
+backend/.phpunit.cache/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
