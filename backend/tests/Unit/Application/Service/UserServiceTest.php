@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Application\Service;
 
+use App\Application\Dto\Query\UserQuery;
 use App\Application\Service\UserService;
 use App\Domain\Entity\User;
 use App\Domain\Repository\UserRepositoryInterface;
@@ -21,7 +22,7 @@ final class UserServiceTest extends TestCase
         $this->service = new UserService($this->userRepository);
     }
 
-    public function testGetAllUsers(): void
+    public function testGetUsers(): void
     {
         $u1 = new User();
         $u1->setName('Alice');
@@ -29,10 +30,11 @@ final class UserServiceTest extends TestCase
         $u2->setName('Bob');
 
         $this->userRepository->expects($this->once())
-            ->method('findAll')
+            ->method('findPaginated')
             ->willReturn([$u1, $u2]);
 
-        $result = $this->service->getAllUsers();
+        $query = new UserQuery();
+        $result = $this->service->getUsers($query);
 
         $this->assertCount(2, $result);
         $this->assertSame('Alice', $result[0]->getName());

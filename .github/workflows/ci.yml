@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  backend:
+    name: Backend Tests & Quality
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: psql
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql, pgsql, intl, zip, openssl
+          coverage: xdebug
+
+      - name: Copy env
+        run: |
+          cp backend/.env.example backend/.env
+          cp docker/.env.example docker/.env
+
+      - name: Install dependencies
+        working-directory: backend
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Generate JWT keys
+        working-directory: backend
+        run: |
+          mkdir -p config/jwt
+          openssl genrsa -out config/jwt/private.pem -aes256 -passout pass:taskmanager 4096
+          openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem -passin pass:taskmanager
+
+      - name: Run migrations
+        working-directory: backend
+        env:
+          DATABASE_URL: "postgresql://postgres:psql@localhost:5432/postgres?serverVersion=16&charset=utf8"
+        run: php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
+
+      - name: Run PHPUnit
+        working-directory: backend
+        env:
+          DATABASE_URL: "postgresql://postgres:psql@localhost:5432/postgres?serverVersion=16&charset=utf8"
+        run: php vendor/bin/phpunit --coverage-text
+
+      - name: Run PHPStan
+        working-directory: backend
+        run: php vendor/bin/phpstan analyse --memory-limit=256M --no-progress
+
+      - name: Run PHP-CS-Fixer (check)
+        working-directory: backend
+        run: php vendor/bin/php-cs-fixer fix --dry-run --diff
+
+  frontend:
+    name: Frontend Tests & Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run ESLint
+        working-directory: frontend
+        run: npm run lint
+
+      - name: Run unit tests
+        working-directory: frontend
+        run: npm run test:unit -- --run
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build

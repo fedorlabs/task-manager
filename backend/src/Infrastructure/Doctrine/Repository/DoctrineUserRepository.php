@@ -9,6 +9,7 @@ use App\Domain\Repository\UserRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/** @extends ServiceEntityRepository<User> */
 class DoctrineUserRepository extends ServiceEntityRepository implements UserRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
@@ -30,6 +31,28 @@ class DoctrineUserRepository extends ServiceEntityRepository implements UserRepo
     public function findAll(): array
     {
         return parent::findAll();
+    }
+
+    /** @return User[] */
+    public function findPaginated(int $limit, int $offset, ?string $sort, string $order): array
+    {
+        $sortField = match ($sort) {
+            'name' => 'u.name',
+            'email' => 'u.email',
+            default => 'u.id',
+        };
+
+        return $this->createQueryBuilder('u')
+            ->orderBy($sortField, $this->normalizeOrder($order))
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
+            ->getQuery()
+            ->getResult();
+    }
+
+    private function normalizeOrder(string $order): string
+    {
+        return strtolower($order) === 'desc' ? 'DESC' : 'ASC';
     }
 
     public function save(User $user): void

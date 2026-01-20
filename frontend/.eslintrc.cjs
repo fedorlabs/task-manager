@@ -11,6 +11,8 @@ module.exports = {
   env: {
     "vue/setup-compiler-macros": true,
     es2022: true,
+    browser: true,
+    node: true,
   },
   parserOptions: {
     ecmaVersion: "latest",

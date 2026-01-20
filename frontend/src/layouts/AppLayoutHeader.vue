@@ -52,7 +52,7 @@
       class="header__menu"
     >
       <div class="user-menu">
-        <img :src="userImage" width="56" height="56" alt="Администратор" />
+        <img :src="userImage" width="56" height="56" alt="Administrator" />
         <span>{{ authStore.user.name }}</span>
         <a href="#" class="user-menu__link" @click="logout">Logout</a>
       </div>

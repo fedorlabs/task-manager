@@ -32,7 +32,7 @@
         />
         <app-button
           class="comments__form__button"
-          :type="'submit'"
+          type="submit"
           @click.prevent="submit"
         >
           Write a comment
@@ -50,17 +50,15 @@ import AppButton from "@/common/components/AppButton.vue";
 import { getPublicImage } from "@/common/helpers";
 import { useAuthStore, useCommentsStore } from "@/stores";
 
-const authStore = useAuthStore();
-const commentsStore = useCommentsStore();
-
 const props = defineProps({
   taskId: {
     type: Number,
     required: true,
   },
 });
-
-const emits = defineEmits(["createNewComment"]);
+defineEmits(["createNewComment"]);
+const authStore = useAuthStore();
+const commentsStore = useCommentsStore();
 
 const newComment = ref("");
 const validations = ref({

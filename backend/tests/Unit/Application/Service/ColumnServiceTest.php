@@ -4,96 +4,82 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Application\Service;
 
+use App\Application\Dto\Column\CreateColumnRequest;
+use App\Application\Dto\Column\UpdateColumnRequest;
+use App\Application\Dto\Query\ColumnQuery;
 use App\Application\Service\ColumnService;
 use App\Domain\Entity\Column;
+use App\Domain\Exception\NotFoundException;
 use App\Domain\Repository\ColumnRepositoryInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class ColumnServiceTest extends TestCase
 {
-    private ColumnRepositoryInterface&MockObject $repository;
+    private ColumnRepositoryInterface&MockObject $columnRepository;
     private ColumnService $service;
 
     protected function setUp(): void
     {
-        $this->repository = $this->createMock(ColumnRepositoryInterface::class);
-        $this->service = new ColumnService($this->repository);
-    }
-
-    public function testGetAllColumns(): void
-    {
-        $col1 = new Column();
-        $col1->setTitle('Scheduled');
-        $col2 = new Column();
-        $col2->setTitle('Done');
-
-        $this->repository->method('findAll')->willReturn([$col1, $col2]);
-
-        $columns = $this->service->getAllColumns();
-
-        $this->assertCount(2, $columns);
+        $this->columnRepository = $this->createMock(ColumnRepositoryInterface::class);
+        $this->service = new ColumnService($this->columnRepository);
     }
 
     public function testGetColumnByIdReturnsColumn(): void
     {
         $column = new Column();
-        $column->setTitle('In Progress');
+        $column->setTitle('Column');
 
-        $this->repository->method('findById')->with(1)->willReturn($column);
+        $this->columnRepository->method('findById')->with(1)->willReturn($column);
 
-        $this->assertSame('In Progress', $this->service->getColumnById(1)->getTitle());
+        $result = $this->service->getColumnById(1);
+        $this->assertSame('Column', $result->getTitle());
     }
 
     public function testGetColumnByIdThrowsNotFound(): void
     {
-        $this->repository->method('findById')->willReturn(null);
-
-        $this->expectException(NotFoundHttpException::class);
+        $this->columnRepository->method('findById')->with(999)->willReturn(null);
+        $this->expectException(NotFoundException::class);
 
         $this->service->getColumnById(999);
     }
 
+    public function testGetColumns(): void
+    {
+        $column = new Column();
+        $column->setTitle('Column');
+
+        $this->columnRepository->expects($this->once())
+            ->method('findPaginated')
+            ->willReturn([$column]);
+
+        $query = new ColumnQuery();
+        $result = $this->service->getColumns($query);
+
+        $this->assertCount(1, $result);
+    }
+
     public function testCreateColumn(): void
     {
-        $this->repository->expects($this->once())
-            ->method('save')
-            ->with($this->isInstanceOf(Column::class));
+        $this->columnRepository->expects($this->once())->method('save');
 
-        $column = $this->service->createColumn('New Column');
+        $dto = CreateColumnRequest::fromArray(['title' => 'New']);
+        $column = $this->service->createColumn($dto);
 
-        $this->assertSame('New Column', $column->getTitle());
+        $this->assertSame('New', $column->getTitle());
     }
 
     public function testUpdateColumn(): void
     {
         $column = new Column();
-        $column->setTitle('Old Title');
+        $column->setTitle('Old');
 
-        $this->repository->method('findById')->with(1)->willReturn($column);
-        $this->repository->expects($this->once())->method('save');
+        $this->columnRepository->method('findById')->with(1)->willReturn($column);
+        $this->columnRepository->expects($this->once())->method('save');
 
-        $updated = $this->service->updateColumn(1, ['title' => 'Updated']);
+        $dto = UpdateColumnRequest::fromArray(['title' => 'New']);
+        $updated = $this->service->updateColumn(1, $dto);
 
-        $this->assertSame('Updated', $updated->getTitle());
-    }
-
-    public function testDeleteColumn(): void
-    {
-        $column = new Column();
-        $column->setTitle('To Delete');
-
-        $this->repository->method('findById')->with(1)->willReturn($column);
-        $this->repository->expects($this->once())->method('remove')->with($column);
-
-        $this->service->deleteColumn(1);
-    }
-
-    public function testGetColumnCount(): void
-    {
-        $this->repository->method('count')->willReturn(5);
-
-        $this->assertSame(5, $this->service->getColumnCount());
+        $this->assertSame('New', $updated->getTitle());
     }
 }

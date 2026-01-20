@@ -4,59 +4,41 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Application\Service;
 
+use App\Application\Dto\Comment\CreateCommentRequest;
+use App\Application\Dto\Comment\UpdateCommentRequest;
+use App\Application\Dto\Query\CommentQuery;
 use App\Application\Service\CommentService;
 use App\Domain\Entity\Comment;
 use App\Domain\Entity\Task;
 use App\Domain\Entity\User;
+use App\Domain\Exception\NotFoundException;
+use App\Domain\Exception\ValidationException;
 use App\Domain\Repository\CommentRepositoryInterface;
 use App\Domain\Repository\TaskRepositoryInterface;
-use App\Domain\Repository\UserRepositoryInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class CommentServiceTest extends TestCase
 {
     private CommentRepositoryInterface&MockObject $commentRepository;
     private TaskRepositoryInterface&MockObject $taskRepository;
-    private UserRepositoryInterface&MockObject $userRepository;
     private CommentService $service;
 
     protected function setUp(): void
     {
         $this->commentRepository = $this->createMock(CommentRepositoryInterface::class);
         $this->taskRepository = $this->createMock(TaskRepositoryInterface::class);
-        $this->userRepository = $this->createMock(UserRepositoryInterface::class);
 
         $this->service = new CommentService(
             $this->commentRepository,
             $this->taskRepository,
-            $this->userRepository,
         );
-    }
-
-    public function testGetAllComments(): void
-    {
-        $c1 = new Comment();
-        $c1->setText('First');
-        $c2 = new Comment();
-        $c2->setText('Second');
-
-        $this->commentRepository->expects($this->once())
-            ->method('findAll')
-            ->willReturn([$c1, $c2]);
-
-        $result = $this->service->getAllComments();
-
-        $this->assertCount(2, $result);
-        $this->assertSame('First', $result[0]->getText());
-        $this->assertSame('Second', $result[1]->getText());
     }
 
     public function testGetCommentByIdReturnsComment(): void
     {
         $comment = new Comment();
-        $comment->setText('Found');
+        $comment->setText('Hello');
 
         $this->commentRepository->expects($this->once())
             ->method('findById')
@@ -64,8 +46,7 @@ final class CommentServiceTest extends TestCase
             ->willReturn($comment);
 
         $result = $this->service->getCommentById(1);
-
-        $this->assertSame('Found', $result->getText());
+        $this->assertSame('Hello', $result->getText());
     }
 
     public function testGetCommentByIdThrowsNotFound(): void
@@ -75,115 +56,119 @@ final class CommentServiceTest extends TestCase
             ->with(999)
             ->willReturn(null);
 
-        $this->expectException(NotFoundHttpException::class);
-        $this->expectExceptionMessage('Comment not found');
+        $this->expectException(NotFoundException::class);
 
         $this->service->getCommentById(999);
     }
 
-    public function testGetCommentsByTaskId(): void
+    public function testGetCommentsForUser(): void
     {
-        $c1 = new Comment();
-        $c1->setText('Task comment');
+        $user = new User();
+        $user->setName('User')->setEmail('u@example.com');
+
+        $comment = new Comment();
+        $comment->setText('Text');
 
         $this->commentRepository->expects($this->once())
-            ->method('findByTaskId')
-            ->with(5)
-            ->willReturn([$c1]);
+            ->method('findByFilters')
+            ->willReturn([$comment]);
 
-        $result = $this->service->getCommentsByTaskId(5);
-
-        $this->assertCount(1, $result);
-        $this->assertSame('Task comment', $result[0]->getText());
+        $query = new CommentQuery();
+        $comments = $this->service->getCommentsForUser($user, $query);
+        $this->assertCount(1, $comments);
     }
 
-    public function testGetCommentCount(): void
+    public function testGetCommentsForUserWithInvalidTaskThrowsNotFound(): void
     {
-        $this->commentRepository->expects($this->once())
-            ->method('count')
-            ->willReturn(15);
+        $user = new User();
+        $user->setName('User')->setEmail('u@example.com');
 
-        $this->assertSame(15, $this->service->getCommentCount());
+        $query = new CommentQuery();
+        $query->taskId = 999;
+
+        $this->taskRepository->expects($this->once())
+            ->method('findById')
+            ->with(999)
+            ->willReturn(null);
+
+        $this->expectException(NotFoundException::class);
+
+        $this->service->getCommentsForUser($user, $query);
     }
 
     public function testCreateComment(): void
     {
-        $this->commentRepository->expects($this->once())
-            ->method('save')
-            ->with($this->isInstanceOf(Comment::class));
-
-        $comment = $this->service->createComment(['text' => 'New comment']);
-
-        $this->assertSame('New comment', $comment->getText());
-    }
-
-    public function testCreateCommentWithRelations(): void
-    {
-        $task = new Task();
-        $task->setTitle('Related task')->setSortOrder(0);
         $user = new User();
-        $user->setName('Author');
+        $user->setName('User')->setEmail('u@example.com');
 
-        $this->taskRepository->method('findById')->with(3)->willReturn($task);
-        $this->userRepository->method('findById')->with('uuid-42')->willReturn($user);
+        $task = new Task();
+        $task->setTitle('Task')->setSortOrder(0);
+
+        $this->taskRepository->method('findById')->with(5)->willReturn($task);
         $this->commentRepository->expects($this->once())->method('save');
 
-        $comment = $this->service->createComment([
-            'text' => 'With relations',
-            'taskId' => 3,
-            'userId' => 'uuid-42',
+        $dto = CreateCommentRequest::fromArray([
+            'text' => 'New comment',
+            'taskId' => 5,
         ]);
 
+        $comment = $this->service->createComment($dto, $user);
+        $this->assertSame('New comment', $comment->getText());
         $this->assertSame($task, $comment->getTask());
-        $this->assertSame($user, $comment->getUser());
     }
 
-    public function testCreateCommentWithNullRelations(): void
+    public function testCreateCommentWithMissingTaskThrowsValidationException(): void
     {
-        $this->commentRepository->expects($this->once())->method('save');
+        $user = new User();
+        $user->setName('User')->setEmail('u@example.com');
 
-        $comment = $this->service->createComment([
-            'text' => 'Orphan',
+        $dto = CreateCommentRequest::fromArray([
+            'text' => 'New comment',
             'taskId' => null,
-            'userId' => null,
         ]);
 
-        $this->assertNull($comment->getTask());
-        $this->assertNull($comment->getUser());
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('Task is required');
+
+        $this->service->createComment($dto, $user);
+    }
+
+    public function testCreateCommentWithInvalidTaskIdThrowsValidationException(): void
+    {
+        $user = new User();
+        $user->setName('User')->setEmail('u@example.com');
+
+        $dto = CreateCommentRequest::fromArray([
+            'text' => 'New comment',
+            'taskId' => -1,
+        ]);
+
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('Task id must be an integer');
+
+        $this->service->createComment($dto, $user);
     }
 
     public function testUpdateComment(): void
     {
         $comment = new Comment();
-        $comment->setText('Old text');
+        $comment->setText('Old');
 
-        $this->commentRepository->method('findById')->with(1)->willReturn($comment);
         $this->commentRepository->expects($this->once())->method('save');
 
-        $updated = $this->service->updateComment(1, ['text' => 'Updated text']);
+        $dto = UpdateCommentRequest::fromArray(['text' => 'New']);
+        $updated = $this->service->updateComment($comment, $dto);
 
-        $this->assertSame('Updated text', $updated->getText());
+        $this->assertSame('New', $updated->getText());
     }
 
     public function testDeleteComment(): void
     {
         $comment = new Comment();
-        $comment->setText('To delete');
+        $comment->setText('To Delete');
 
-        $this->commentRepository->method('findById')->with(1)->willReturn($comment);
-        $this->commentRepository->expects($this->once())
-            ->method('remove')
-            ->with($comment);
+        $this->commentRepository->expects($this->once())->method('remove')->with($comment);
 
-        $this->service->deleteComment(1);
-    }
-
-    public function testDeleteCommentNotFoundThrows(): void
-    {
-        $this->commentRepository->method('findById')->with(999)->willReturn(null);
-
-        $this->expectException(NotFoundHttpException::class);
-
-        $this->service->deleteComment(999);
+        $this->service->deleteComment($comment);
     }
 }

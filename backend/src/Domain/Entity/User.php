@@ -7,39 +7,55 @@ namespace App\Domain\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Attributes as OA;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
 #[ORM\Table(name: '"user"')]
+#[OA\Schema(title: 'User', description: 'Пользователь системы')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\Column(type: 'string', length: 36)]
+    #[Groups(['user:read'])]
+    #[OA\Property(description: 'UUID пользователя', example: '550e8400-e29b-41d4-a716-446655440000')]
     private string $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['user:read'])]
+    #[OA\Property(description: 'Имя пользователя', example: 'John Doe')]
     private string $name;
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
+    #[Groups(['user:read'])]
+    #[OA\Property(description: 'Email', example: 'john@example.com')]
     private string $email;
 
     #[ORM\Column(type: 'string', length: 255)]
     private string $password;
 
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    #[Groups(['user:read'])]
+    #[OA\Property(description: 'Администратор', example: false)]
     private bool $isAdmin = false;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['user:read'])]
+    #[OA\Property(description: 'URL аватара', example: '/uploads/avatar.jpg', nullable: true)]
     private ?string $avatar = null;
 
     /** @var Collection<int, Task> */
     #[ORM\OneToMany(targetEntity: Task::class, mappedBy: 'user')]
+    #[Ignore]
     private Collection $tasks;
 
     /** @var Collection<int, Comment> */
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'user')]
+    #[Ignore]
     private Collection $comments;
 
     public function __construct()

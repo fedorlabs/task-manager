@@ -19,7 +19,7 @@ describe("columns store", () => {
   });
   it("should add a new column", async () => {
     // In this test, it doesn't matter what we send to the server, it's important what result mockStore will give us.js
-    await columnsStore.addColumn({ title: "Новая колонка" });
+    await columnsStore.addColumn({ title: "New column" });
     const columnsLength = columnsStore.columns.length;
     // Check that the number of columns has increased by one
     expect(columnsLength).toBe(6);
@@ -40,7 +40,7 @@ describe("columns store", () => {
     expect(columnsStore.columns.length).toBe(4);
     // Check that the column with id = 5 does not exist
     expect(
-      columnsStore.columns.find((column) => column.id == 5)
+      columnsStore.columns.find((column) => column.id === 5),
     ).toBeUndefined();
   });
 });

@@ -1,0 +1,22 @@
+# Backend
+backend/vendor/
+backend/var/
+backend/node_modules/
+backend/.phpunit.cache/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# Docker
+.docker/

@@ -4,25 +4,35 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Application\Service\EntitySerializer;
+use App\Application\Dto\Query\StatusQuery;
+use App\Application\Dto\Status\CreateStatusRequest;
+use App\Application\Dto\Status\UpdateStatusRequest;
+use App\Application\Service\QueryParamResolver;
+use App\Application\Service\RequestPayloadParser;
+use App\Application\Service\RequestValidator;
 use App\Application\Service\StatusService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
-class StatusController extends AbstractController
+class StatusController extends ApiController
 {
     public function __construct(
         private readonly StatusService $statusService,
-        private readonly EntitySerializer $serializer,
+        private readonly RequestValidator $validator,
+        private readonly RequestPayloadParser $payloadParser,
+        private readonly QueryParamResolver $queryParams,
+        private readonly SerializerInterface $serializer,
     ) {}
 
     #[Route('/statuses', name: 'api_statuses_list', methods: ['GET'])]
-    public function list(): JsonResponse
+    public function list(Request $request): JsonResponse
     {
-        return $this->json($this->serializer->serializeStatuses($this->statusService->getAllStatuses()));
+        $query = StatusQuery::fromRequest($request, $this->queryParams);
+        $this->validator->validate($query);
+        return new JsonResponse($this->serializer->serialize($this->statusService->getStatuses($query), 'json', ['groups' => 'status:read']), json: true);
     }
 
     #[Route('/statuses/count', name: 'api_statuses_count', methods: ['GET'])]
@@ -34,23 +44,27 @@ class StatusController extends AbstractController
     #[Route('/statuses/{id}', name: 'api_statuses_show', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function show(int $id): JsonResponse
     {
-        return $this->json($this->serializer->serializeStatus($this->statusService->getStatusById($id)));
+        return new JsonResponse($this->serializer->serialize($this->statusService->getStatusById($id), 'json', ['groups' => 'status:read']), json: true);
     }
 
     #[Route('/statuses', name: 'api_statuses_create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
-        $data = json_decode($request->getContent(), true) ?? [];
-        $status = $this->statusService->createStatus($data['name'] ?? '');
-        return $this->json($this->serializer->serializeStatus($status));
+        $data = $this->payloadParser->parse($request);
+        $dto = CreateStatusRequest::fromArray($data);
+        $this->validator->validate($dto);
+        $status = $this->statusService->createStatus($dto);
+        return new JsonResponse($this->serializer->serialize($status, 'json', ['groups' => 'status:read']), json: true);
     }
 
     #[Route('/statuses/{id}', name: 'api_statuses_update', methods: ['PATCH', 'PUT'], requirements: ['id' => '\d+'])]
     public function update(int $id, Request $request): JsonResponse
     {
-        $data = json_decode($request->getContent(), true) ?? [];
-        $status = $this->statusService->updateStatus($id, $data);
-        return $this->json($this->serializer->serializeStatus($status));
+        $data = $this->payloadParser->parse($request);
+        $dto = UpdateStatusRequest::fromArray($data);
+        $this->validator->validate($dto);
+        $status = $this->statusService->updateStatus($id, $dto);
+        return new JsonResponse($this->serializer->serialize($status, 'json', ['groups' => 'status:read']), json: true);
     }
 
     #[Route('/statuses/{id}', name: 'api_statuses_delete', methods: ['DELETE'], requirements: ['id' => '\d+'])]

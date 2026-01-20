@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { commentsService } from "@/services";
 import { useUsersStore } from "@/stores";
+import { withLoading } from "@/common/store-helpers";
 
 export const useCommentsStore = defineStore("comments", {
   state: () => ({
@@ -24,15 +25,9 @@ export const useCommentsStore = defineStore("comments", {
 
   actions: {
     async fetchComments() {
-      this.loading = true;
-      this.error = null;
-      try {
+      return withLoading(this, async () => {
         this.comments = await commentsService.fetchComments();
-      } catch (e) {
-        this.error = e.message;
-      } finally {
-        this.loading = false;
-      }
+      });
     },
 
     async addComment(comment) {
