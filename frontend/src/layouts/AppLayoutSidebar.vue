@@ -18,7 +18,7 @@
         <div class="backlog__collapse">
           <div class="backlog__user">
             <div class="backlog__account">
-              <img :src="userImage" alt="Ваш аватар" width="32" height="32" />
+              <img :src="userImage" alt="Your avatar" width="32" height="32" />
               {{ authStore.user.name }}
             </div>
 

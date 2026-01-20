@@ -13,7 +13,10 @@ interface TickRepositoryInterface
     public function findAll(): array;
     /** @return Tick[] */
     public function findByTaskId(int $taskId): array;
+    /** @return Tick[] */
+    public function findByFilters(?int $taskId, ?string $sort, string $order, int $limit, int $offset): array;
     public function count(): int;
+    public function countByFilters(?int $taskId): int;
     public function save(Tick $tick): void;
     public function remove(Tick $tick): void;
 }

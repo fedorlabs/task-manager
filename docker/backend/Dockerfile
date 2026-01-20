@@ -1,4 +1,4 @@
-FROM php:8.2-fpm
+FROM php:8.4-fpm
 
 RUN apt-get update && apt-get install -y \
     bash \
@@ -22,7 +22,8 @@ COPY . .
 RUN composer dump-autoload --optimize || true
 
 RUN mkdir -p var/cache var/log config/jwt \
-    && chmod -R 777 var
+    && chown -R www-data:www-data var \
+    && chmod -R 775 var
 
-EXPOSE 8000
-CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
+EXPOSE 9000
+CMD ["php-fpm"]

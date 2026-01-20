@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Application\Service;
 
+use App\Application\Dto\Query\TickQuery;
+use App\Application\Dto\Tick\CreateTickRequest;
+use App\Application\Dto\Tick\UpdateTickRequest;
 use App\Application\Service\TickService;
 use App\Domain\Entity\Task;
 use App\Domain\Entity\Tick;
+use App\Domain\Exception\NotFoundException;
+use App\Domain\Exception\ValidationException;
 use App\Domain\Repository\TaskRepositoryInterface;
 use App\Domain\Repository\TickRepositoryInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class TickServiceTest extends TestCase
 {
@@ -30,23 +34,6 @@ final class TickServiceTest extends TestCase
         );
     }
 
-    public function testGetAllTicks(): void
-    {
-        $t1 = new Tick();
-        $t1->setText('Tick 1');
-        $t2 = new Tick();
-        $t2->setText('Tick 2');
-
-        $this->tickRepository->expects($this->once())
-            ->method('findAll')
-            ->willReturn([$t1, $t2]);
-
-        $result = $this->service->getAllTicks();
-
-        $this->assertCount(2, $result);
-        $this->assertSame('Tick 1', $result[0]->getText());
-    }
-
     public function testGetTickByIdReturnsTick(): void
     {
         $tick = new Tick();
@@ -58,7 +45,6 @@ final class TickServiceTest extends TestCase
             ->willReturn($tick);
 
         $result = $this->service->getTickById(1);
-
         $this->assertSame('Found tick', $result->getText());
     }
 
@@ -69,118 +55,97 @@ final class TickServiceTest extends TestCase
             ->with(999)
             ->willReturn(null);
 
-        $this->expectException(NotFoundHttpException::class);
-        $this->expectExceptionMessage('Tick not found');
-
+        $this->expectException(NotFoundException::class);
         $this->service->getTickById(999);
     }
 
-    public function testGetTicksByTaskId(): void
+    public function testGetTicks(): void
     {
         $tick = new Tick();
-        $tick->setText('Task tick');
+        $tick->setText('Tick');
 
         $this->tickRepository->expects($this->once())
-            ->method('findByTaskId')
-            ->with(7)
+            ->method('findByFilters')
             ->willReturn([$tick]);
 
-        $result = $this->service->getTicksByTaskId(7);
+        $query = new TickQuery();
+        $result = $this->service->getTicks($query);
 
         $this->assertCount(1, $result);
-        $this->assertSame('Task tick', $result[0]->getText());
     }
 
-    public function testGetTickCount(): void
+    public function testGetTicksWithInvalidTaskThrowsNotFound(): void
     {
-        $this->tickRepository->expects($this->once())
-            ->method('count')
-            ->willReturn(30);
+        $query = new TickQuery();
+        $query->taskId = 999;
 
-        $this->assertSame(30, $this->service->getTickCount());
+        $this->taskRepository->expects($this->once())
+            ->method('findById')
+            ->with(999)
+            ->willReturn(null);
+
+        $this->expectException(NotFoundException::class);
+
+        $this->service->getTicks($query);
     }
 
-    public function testCreateTick(): void
-    {
-        $this->tickRepository->expects($this->once())
-            ->method('save')
-            ->with($this->isInstanceOf(Tick::class));
-
-        $tick = $this->service->createTick([
-            'text' => 'New tick',
-            'done' => false,
-        ]);
-
-        $this->assertSame('New tick', $tick->getText());
-        $this->assertFalse($tick->isDone());
-    }
-
-    public function testCreateTickWithTaskRelation(): void
+    public function testCreateTickWithTask(): void
     {
         $task = new Task();
-        $task->setTitle('Parent task')->setSortOrder(0);
+        $task->setTitle('Parent')->setSortOrder(0);
 
         $this->taskRepository->method('findById')->with(5)->willReturn($task);
         $this->tickRepository->expects($this->once())->method('save');
 
-        $tick = $this->service->createTick([
-            'text' => 'Tick with task',
-            'done' => true,
+        $dto = CreateTickRequest::fromArray([
+            'text' => 'Tick',
             'taskId' => 5,
+            'done' => true,
         ]);
 
+        $tick = $this->service->createTick($dto);
         $this->assertSame($task, $tick->getTask());
-        $this->assertTrue($tick->isDone());
     }
 
-    public function testCreateTickWithNullTaskId(): void
+    public function testCreateTickWithMissingTaskThrowsValidationException(): void
     {
-        $this->tickRepository->expects($this->once())->method('save');
-
-        $tick = $this->service->createTick([
-            'text' => 'Orphan tick',
+        $dto = CreateTickRequest::fromArray([
+            'text' => 'Tick',
             'taskId' => null,
+            'done' => true,
         ]);
 
-        $this->assertNull($tick->getTask());
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('Task is required');
+
+        $this->service->createTick($dto);
     }
 
     public function testUpdateTick(): void
     {
         $tick = new Tick();
-        $tick->setText('Old text')->setDone(false);
+        $tick->setText('Old')->setDone(false);
 
         $this->tickRepository->method('findById')->with(1)->willReturn($tick);
         $this->tickRepository->expects($this->once())->method('save');
 
-        $updated = $this->service->updateTick(1, [
-            'text' => 'Updated text',
+        $dto = UpdateTickRequest::fromArray([
+            'text' => 'New',
             'done' => true,
         ]);
 
-        $this->assertSame('Updated text', $updated->getText());
-        $this->assertTrue($updated->isDone());
+        $updated = $this->service->updateTick(1, $dto);
+        $this->assertSame('New', $updated->getText());
     }
 
     public function testDeleteTick(): void
     {
         $tick = new Tick();
-        $tick->setText('To delete');
+        $tick->setText('To Delete')->setDone(false);
 
         $this->tickRepository->method('findById')->with(1)->willReturn($tick);
-        $this->tickRepository->expects($this->once())
-            ->method('remove')
-            ->with($tick);
+        $this->tickRepository->expects($this->once())->method('remove')->with($tick);
 
         $this->service->deleteTick(1);
-    }
-
-    public function testDeleteTickNotFoundThrows(): void
-    {
-        $this->tickRepository->method('findById')->with(999)->willReturn(null);
-
-        $this->expectException(NotFoundHttpException::class);
-
-        $this->service->deleteTick(999);
     }
 }

@@ -97,15 +97,16 @@ watch(password, () => {
   if (serverErrorMessage.value) {
     serverErrorMessage.value = null;
   }
-  if (validations.value.password.error)
+  if (validations.value.password.error) {
     clearValidationErrors(validations.value);
+  }
 });
 
 async function login() {
   if (
     !validateFields(
       { email: email.value, password: password.value },
-      validations.value
+      validations.value,
     )
   ) {
     return;

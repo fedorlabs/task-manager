@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Application\Service;
 
+use App\Application\Dto\Auth\SignupRequest;
 use App\Application\Service\AuthService;
 use App\Domain\Entity\User;
+use App\Domain\Exception\NotFoundException;
+use App\Domain\Exception\ValidationException;
 use App\Domain\Repository\UserRepositoryInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 final class AuthServiceTest extends TestCase
@@ -33,7 +34,12 @@ final class AuthServiceTest extends TestCase
         $this->passwordHasher->method('hashPassword')->willReturn('hashed_password');
         $this->userRepository->expects($this->once())->method('save');
 
-        $user = $this->service->register('John', 'john@example.com', 'password123');
+        $dto = SignupRequest::fromArray([
+            'name' => 'John',
+            'email' => 'john@example.com',
+            'password' => 'password123',
+        ]);
+        $user = $this->service->register($dto);
 
         $this->assertSame('John', $user->getName());
         $this->assertSame('john@example.com', $user->getEmail());
@@ -41,15 +47,21 @@ final class AuthServiceTest extends TestCase
         $this->assertFalse($user->isAdmin());
     }
 
-    public function testRegisterAdminUser(): void
+    public function testRegisterSetsAvatar(): void
     {
         $this->userRepository->method('findByEmail')->willReturn(null);
         $this->passwordHasher->method('hashPassword')->willReturn('hashed');
         $this->userRepository->expects($this->once())->method('save');
 
-        $user = $this->service->register('Admin', 'admin@example.com', 'admin', true, '/avatar.jpg');
+        $dto = SignupRequest::fromArray([
+            'name' => 'Admin',
+            'email' => 'admin@example.com',
+            'password' => 'admin1234',
+            'avatar' => '/avatar.jpg',
+        ]);
+        $user = $this->service->register($dto);
 
-        $this->assertTrue($user->isAdmin());
+        $this->assertFalse($user->isAdmin());
         $this->assertSame('/avatar.jpg', $user->getAvatar());
     }
 
@@ -60,9 +72,14 @@ final class AuthServiceTest extends TestCase
 
         $this->userRepository->method('findByEmail')->willReturn($existing);
 
-        $this->expectException(BadRequestHttpException::class);
+        $this->expectException(ValidationException::class);
 
-        $this->service->register('Jane', 'taken@example.com', 'password');
+        $dto = SignupRequest::fromArray([
+            'name' => 'Jane',
+            'email' => 'taken@example.com',
+            'password' => 'password123',
+        ]);
+        $this->service->register($dto);
     }
 
     public function testGetCurrentUserReturnsUser(): void
@@ -81,7 +98,7 @@ final class AuthServiceTest extends TestCase
     {
         $this->userRepository->method('findById')->willReturn(null);
 
-        $this->expectException(UnauthorizedHttpException::class);
+        $this->expectException(NotFoundException::class);
 
         $this->service->getCurrentUser('nonexistent-uuid');
     }

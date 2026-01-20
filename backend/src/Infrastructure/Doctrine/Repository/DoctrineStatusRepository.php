@@ -9,6 +9,7 @@ use App\Domain\Repository\StatusRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/** @extends ServiceEntityRepository<Status> */
 class DoctrineStatusRepository extends ServiceEntityRepository implements StatusRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
@@ -25,6 +26,27 @@ class DoctrineStatusRepository extends ServiceEntityRepository implements Status
     public function findAll(): array
     {
         return parent::findAll();
+    }
+
+    /** @return Status[] */
+    public function findPaginated(int $limit, int $offset, ?string $sort, string $order): array
+    {
+        $sortField = match ($sort) {
+            'name' => 's.name',
+            default => 's.id',
+        };
+
+        return $this->createQueryBuilder('s')
+            ->orderBy($sortField, $this->normalizeOrder($order))
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
+            ->getQuery()
+            ->getResult();
+    }
+
+    private function normalizeOrder(string $order): string
+    {
+        return strtolower($order) === 'desc' ? 'DESC' : 'ASC';
     }
 
     public function count(array $criteria = []): int

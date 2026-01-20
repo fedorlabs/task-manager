@@ -252,7 +252,21 @@ describe("helpers", () => {
 
   describe("getPublicImage", () => {
     it("should prepend /api/ to path", () => {
-      expect(getPublicImage("images/avatar.png")).toBe("/api/images/avatar.png");
+      expect(getPublicImage("images/avatar.png")).toBe(
+        "/api/images/avatar.png",
+      );
+    });
+
+    it("should return empty string for null path", () => {
+      expect(getPublicImage(null)).toBe("");
+    });
+
+    it("should return empty string for undefined path", () => {
+      expect(getPublicImage(undefined)).toBe("");
+    });
+
+    it("should return empty string for empty string path", () => {
+      expect(getPublicImage("")).toBe("");
     });
   });
 });

@@ -7,62 +7,94 @@ namespace App\Domain\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use OpenApi\Attributes as OA;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'tasks')]
 #[ORM\HasLifecycleCallbacks]
+#[OA\Schema(title: 'Task', description: 'Задача')]
 class Task
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['task:read', 'comment:read', 'tick:read'])]
+    #[OA\Property(description: 'ID задачи', example: 1)]
     private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['task:read', 'comment:read', 'tick:read'])]
+    #[OA\Property(description: 'Заголовок', example: 'Реализовать авторизацию')]
     private string $title;
 
     #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups(['task:read', 'comment:read', 'tick:read'])]
+    #[OA\Property(description: 'Описание', example: 'Добавить JWT-аутентификацию', nullable: true)]
     private ?string $description = null;
 
     #[ORM\Column(type: 'integer')]
+    #[Groups(['task:read', 'comment:read', 'tick:read'])]
+    #[OA\Property(description: 'Порядок сортировки', example: 0)]
     private int $sortOrder = 0;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
+    #[Groups(['task:read', 'comment:read', 'tick:read'])]
+    #[OA\Property(description: 'Срок выполнения', format: 'date-time', nullable: true)]
     private ?\DateTimeInterface $dueDate = null;
 
     #[ORM\Column(type: 'string', length: 500, nullable: true)]
+    #[Groups(['task:read', 'comment:read', 'tick:read'])]
+    #[OA\Property(description: 'URL', example: 'https://example.com', nullable: true)]
     private ?string $url = null;
 
     #[ORM\Column(type: 'string', length: 500, nullable: true)]
+    #[Groups(['task:read', 'comment:read', 'tick:read'])]
+    #[OA\Property(description: 'Описание URL', example: 'Документация', nullable: true)]
     private ?string $urlDescription = null;
 
     #[ORM\Column(type: 'string', length: 1000, nullable: true)]
+    #[Groups(['task:read', 'comment:read', 'tick:read'])]
+    #[OA\Property(description: 'Теги', example: 'backend#auth', nullable: true)]
     private ?string $tags = null;
 
     #[ORM\Column(type: 'datetime')]
+    #[Groups(['task:read', 'comment:read', 'tick:read'])]
+    #[OA\Property(description: 'Дата создания', format: 'date-time')]
     private \DateTimeInterface $createdAt;
 
     #[ORM\Column(type: 'datetime')]
+    #[Groups(['task:read', 'comment:read', 'tick:read'])]
+    #[OA\Property(description: 'Дата обновления', format: 'date-time')]
     private \DateTimeInterface $updatedAt;
 
     #[ORM\ManyToOne(targetEntity: Column::class, inversedBy: 'tasks')]
     #[ORM\JoinColumn(name: 'column_id', nullable: true, onDelete: 'SET NULL')]
+    #[Groups(['task:read', 'comment:read', 'tick:read'])]
+    #[OA\Property(ref: '#/components/schemas/Column', nullable: true)]
     private ?Column $column = null;
 
     #[ORM\ManyToOne(targetEntity: Status::class, inversedBy: 'tasks')]
     #[ORM\JoinColumn(name: 'status_id', nullable: true, onDelete: 'SET NULL')]
+    #[Groups(['task:read', 'comment:read', 'tick:read'])]
+    #[OA\Property(ref: '#/components/schemas/Status', nullable: true)]
     private ?Status $status = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'tasks')]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    #[Groups(['task:read', 'comment:read', 'tick:read'])]
+    #[OA\Property(ref: '#/components/schemas/User')]
     private ?User $user = null;
 
     /** @var Collection<int, Comment> */
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'task', cascade: ['remove'])]
+    #[Ignore]
     private Collection $comments;
 
     /** @var Collection<int, Tick> */
     #[ORM\OneToMany(targetEntity: Tick::class, mappedBy: 'task', cascade: ['remove'])]
+    #[Ignore]
     private Collection $ticks;
 
     public function __construct()

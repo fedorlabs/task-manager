@@ -28,7 +28,7 @@
                 class="user-filter__item"
                 :class="{
                   active: filtersStore.filters.users.some(
-                    (id) => id === user.id
+                    (id) => id === user.id,
                   ),
                 }"
                 @click="
@@ -56,7 +56,7 @@
                 class="meta-filter__item"
                 :class="{
                   active: filtersStore.filters.statuses.some(
-                    (s) => s === value
+                    (s) => s === value,
                   ),
                 }"
                 @click="
@@ -94,7 +94,7 @@ import { getPublicImage } from "@/common/helpers";
 import { STATUSES } from "@/common/constants";
 import DeskColumn from "@/modules/columns/components/DeskColumn.vue";
 
-// Определяем хранилища
+// Define stores
 const usersStore = useUsersStore();
 const columnsStore = useColumnsStore();
 const filtersStore = useFiltersStore();

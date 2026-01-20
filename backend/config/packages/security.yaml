@@ -26,13 +26,10 @@ security:
             jwt: ~
 
     access_control:
+        - { path: ^/health, roles: PUBLIC_ACCESS }
+        - { path: ^/doc, roles: PUBLIC_ACCESS }
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/signup, roles: PUBLIC_ACCESS }
-        - { path: ^/users, roles: PUBLIC_ACCESS }
-        - { path: ^/columns, roles: PUBLIC_ACCESS }
-        - { path: ^/statuses, roles: PUBLIC_ACCESS }
-        - { path: ^/tasks, roles: PUBLIC_ACCESS }
-        - { path: ^/comments, roles: PUBLIC_ACCESS }
-        - { path: ^/ticks, roles: PUBLIC_ACCESS }
         - { path: ^/whoAmI, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/logout, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/, roles: IS_AUTHENTICATED_FULLY }

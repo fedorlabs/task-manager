@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace App\Application\Service;
 
+use App\Application\Dto\Column\CreateColumnRequest;
+use App\Application\Dto\Column\UpdateColumnRequest;
+use App\Application\Dto\Query\ColumnQuery;
 use App\Domain\Entity\Column;
+use App\Domain\Exception\ValidationException;
+use App\Domain\Exception\NotFoundException;
 use App\Domain\Repository\ColumnRepositoryInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ColumnService
 {
@@ -20,11 +24,17 @@ class ColumnService
         return $this->columnRepository->findAll();
     }
 
+    /** @return Column[] */
+    public function getColumns(ColumnQuery $query): array
+    {
+        return $this->columnRepository->findPaginated($query->limit, $query->offset, $query->sort, $query->order ?? 'asc');
+    }
+
     public function getColumnById(int $id): Column
     {
         $column = $this->columnRepository->findById($id);
         if (!$column) {
-            throw new NotFoundHttpException('Column not found');
+            throw new NotFoundException('Column not found');
         }
         return $column;
     }
@@ -34,19 +44,22 @@ class ColumnService
         return $this->columnRepository->count();
     }
 
-    public function createColumn(string $title): Column
+    public function createColumn(CreateColumnRequest $dto): Column
     {
         $column = new Column();
-        $column->setTitle($title);
+        $column->setTitle($dto->title);
         $this->columnRepository->save($column);
         return $column;
     }
 
-    public function updateColumn(int $id, array $data): Column
+    public function updateColumn(int $id, UpdateColumnRequest $dto): Column
     {
         $column = $this->getColumnById($id);
-        if (array_key_exists('title', $data)) {
-            $column->setTitle($data['title']);
+        if ($dto->isProvided('title')) {
+            if ($dto->title === null) {
+                throw new ValidationException('Title is required');
+            }
+            $column->setTitle($dto->title);
         }
         $this->columnRepository->save($column);
         return $column;

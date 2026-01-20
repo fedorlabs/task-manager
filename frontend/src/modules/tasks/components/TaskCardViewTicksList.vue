@@ -60,7 +60,7 @@
 <script setup>
 import AppIcon from "@/common/components/AppIcon.vue";
 
-const props = defineProps({
+defineProps({
   ticks: {
     type: Array,
     default: () => [],

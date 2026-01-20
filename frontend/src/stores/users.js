@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { userService } from "@/services";
+import { withLoading } from "@/common/store-helpers";
 
 export const useUsersStore = defineStore("users", {
   state: () => ({
@@ -15,15 +16,9 @@ export const useUsersStore = defineStore("users", {
 
   actions: {
     async fetchUsers() {
-      this.loading = true;
-      this.error = null;
-      try {
+      return withLoading(this, async () => {
         this.users = await userService.fetchUsers();
-      } catch (e) {
-        this.error = e.message;
-      } finally {
-        this.loading = false;
-      }
+      });
     },
   },
 });

@@ -5,33 +5,20 @@ import httpProvider from "@/services/providers";
 const BASE_URL = "/api/ticks";
 
 class TicksService extends HttpClient {
-  async fetchTicks() {
-    try {
-      return this.get("/");
-    } catch (e) {
-      throw Error(e);
-    }
+  fetchTicks() {
+    return this.get("");
   }
-  async createTick(tick) {
-    try {
-      return this.post("/", { data: tick });
-    } catch (e) {
-      throw Error(e);
-    }
+
+  createTick(tick) {
+    return this.post("", { data: tick });
   }
-  async updateTick(tick) {
-    try {
-      return this.put(`/${tick.id}`, { data: tick });
-    } catch (e) {
-      throw Error(e);
-    }
+
+  updateTick(tick) {
+    return this.put(`/${tick.id}`, { data: tick });
   }
-  async deleteTick(id) {
-    try {
-      await this.delete(`/${id}`);
-    } catch (e) {
-      throw Error(e);
-    }
+
+  deleteTick(id) {
+    return this.delete(`/${id}`);
   }
 }
 

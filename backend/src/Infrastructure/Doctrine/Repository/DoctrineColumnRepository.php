@@ -9,6 +9,7 @@ use App\Domain\Repository\ColumnRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/** @extends ServiceEntityRepository<Column> */
 class DoctrineColumnRepository extends ServiceEntityRepository implements ColumnRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
@@ -25,6 +26,27 @@ class DoctrineColumnRepository extends ServiceEntityRepository implements Column
     public function findAll(): array
     {
         return parent::findAll();
+    }
+
+    /** @return Column[] */
+    public function findPaginated(int $limit, int $offset, ?string $sort, string $order): array
+    {
+        $sortField = match ($sort) {
+            'title' => 'c.title',
+            default => 'c.id',
+        };
+
+        return $this->createQueryBuilder('c')
+            ->orderBy($sortField, $this->normalizeOrder($order))
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
+            ->getQuery()
+            ->getResult();
+    }
+
+    private function normalizeOrder(string $order): string
+    {
+        return strtolower($order) === 'desc' ? 'DESC' : 'ASC';
     }
 
     public function count(array $criteria = []): int

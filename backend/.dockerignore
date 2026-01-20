@@ -1,0 +1,8 @@
+.git
+.github
+npm-debug.log
+*.log
+*.cache
+*.tsbuildinfo
+coverage
+build
