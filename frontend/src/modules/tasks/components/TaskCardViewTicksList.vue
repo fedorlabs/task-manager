@@ -74,7 +74,7 @@ defineProps({
 const emits = defineEmits(["createTick", "updateTick", "removeTick"]);
 
 const updateTick = function (tick, property, value) {
-  const tickCopy = Object.assign({}, tick);
+  const tickCopy = { ...tick };
   tickCopy[property] = value;
   emits("updateTick", tickCopy);
 };

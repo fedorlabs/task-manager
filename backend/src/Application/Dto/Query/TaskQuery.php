@@ -44,7 +44,7 @@ class TaskQuery
         return $dto;
     }
 
-    private static function normalizeString(mixed $value): ?string
+    private static function normalizeString(string|int|float|null $value): ?string
     {
         if ($value === null) {
             return null;
@@ -53,7 +53,7 @@ class TaskQuery
         return $value === '' ? null : $value;
     }
 
-    private static function normalizeOrder(mixed $value, ?string $sort): ?string
+    private static function normalizeOrder(string|int|float|null $value, ?string $sort): ?string
     {
         if ($value === null || $value === '') {
             return $sort ? 'asc' : null;

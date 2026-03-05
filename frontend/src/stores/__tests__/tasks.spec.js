@@ -73,7 +73,7 @@ describe("tasks store", () => {
     it("should handle fetch error", async () => {
       tasksService.fetchTasks.mockRejectedValue(new Error("Network error"));
 
-      await tasksStore.fetchTasks();
+      await expect(tasksStore.fetchTasks()).rejects.toThrow("Network error");
 
       expect(tasksStore.tasks).toEqual([]);
       expect(tasksStore.error).toBe("Network error");

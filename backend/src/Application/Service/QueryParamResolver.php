@@ -59,7 +59,7 @@ class QueryParamResolver
         return $value;
     }
 
-    private function validateInt(mixed $value, string $field): int
+    private function validateInt(string|int|float|null $value, string $field): int
     {
         $validated = filter_var($value, FILTER_VALIDATE_INT);
         if ($validated === false) {

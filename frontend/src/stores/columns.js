@@ -22,14 +22,18 @@ export const useColumnsStore = defineStore("columns", {
       const newColumn = await columnsService.createColumn({
         title: "New column",
       });
-      this.columns.push(newColumn);
+      this.columns = [...this.columns, newColumn];
     },
 
     async updateColumn(column) {
       await columnsService.updateColumns(column);
       const index = this.columns.findIndex(({ id }) => id === column.id);
       if (index !== -1) {
-        this.columns.splice(index, 1, column);
+        this.columns = [
+          ...this.columns.slice(0, index),
+          column,
+          ...this.columns.slice(index + 1),
+        ];
       }
     },
 

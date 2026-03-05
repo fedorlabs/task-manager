@@ -7,6 +7,7 @@ namespace App\Infrastructure\Doctrine\Repository;
 use App\Domain\Entity\Tick;
 use App\Domain\Repository\TickRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Infrastructure\Doctrine\Repository\RepositoryOrderTrait;
 use Doctrine\Persistence\ManagerRegistry;
 
 /** @extends ServiceEntityRepository<Tick> */
@@ -79,10 +80,6 @@ class DoctrineTickRepository extends ServiceEntityRepository implements TickRepo
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
-    private function normalizeOrder(string $order): string
-    {
-        return strtolower($order) === 'desc' ? 'DESC' : 'ASC';
-    }
 
     public function save(Tick $tick): void
     {

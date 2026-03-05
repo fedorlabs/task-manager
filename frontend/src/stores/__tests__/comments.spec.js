@@ -65,7 +65,9 @@ describe("comments store", () => {
         new Error("Failed to load"),
       );
 
-      await commentsStore.fetchComments();
+      await expect(commentsStore.fetchComments()).rejects.toThrow(
+        "Failed to load",
+      );
 
       expect(commentsStore.comments).toEqual([]);
       expect(commentsStore.error).toBe("Failed to load");

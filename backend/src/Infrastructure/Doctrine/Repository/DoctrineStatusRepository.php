@@ -7,6 +7,7 @@ namespace App\Infrastructure\Doctrine\Repository;
 use App\Domain\Entity\Status;
 use App\Domain\Repository\StatusRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Infrastructure\Doctrine\Repository\RepositoryOrderTrait;
 use Doctrine\Persistence\ManagerRegistry;
 
 /** @extends ServiceEntityRepository<Status> */
@@ -44,10 +45,6 @@ class DoctrineStatusRepository extends ServiceEntityRepository implements Status
             ->getResult();
     }
 
-    private function normalizeOrder(string $order): string
-    {
-        return strtolower($order) === 'desc' ? 'DESC' : 'ASC';
-    }
 
     public function count(array $criteria = []): int
     {

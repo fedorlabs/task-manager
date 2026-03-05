@@ -7,6 +7,7 @@ namespace App\Infrastructure\Doctrine\Repository;
 use App\Domain\Entity\Column;
 use App\Domain\Repository\ColumnRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Infrastructure\Doctrine\Repository\RepositoryOrderTrait;
 use Doctrine\Persistence\ManagerRegistry;
 
 /** @extends ServiceEntityRepository<Column> */
@@ -44,10 +45,6 @@ class DoctrineColumnRepository extends ServiceEntityRepository implements Column
             ->getResult();
     }
 
-    private function normalizeOrder(string $order): string
-    {
-        return strtolower($order) === 'desc' ? 'DESC' : 'ASC';
-    }
 
     public function count(array $criteria = []): int
     {

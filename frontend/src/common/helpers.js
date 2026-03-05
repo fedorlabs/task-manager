@@ -82,22 +82,21 @@ export const getTargetColumnTasks = (toColumnId, tasks) => {
  * @returns {*}
  */
 export const addActive = (active, toTask, tasks) => {
-  // If a task to be moved is found, it is removed from the tasks array.
-  const activeIndex = tasks.findIndex((task) => task.id === active.id);
-  if (~activeIndex) {
-    tasks.splice(activeIndex, 1);
-  }
-  // Sorted in ascending order.
-  tasks.sort((a, b) => a.sortOrder - b.sortOrder);
+  // Remove active task if present, then sort
+  const filtered = tasks
+    .filter((task) => task.id !== active.id)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
 
-  // Update a task list with a draggable task
+  // Insert active task at target position
   if (toTask) {
-    const toTaskIndex = tasks.findIndex((task) => task.id === toTask.id);
-    tasks.splice(toTaskIndex, 0, active);
-  } else {
-    tasks.push(active);
+    const toTaskIndex = filtered.findIndex((task) => task.id === toTask.id);
+    return [
+      ...filtered.slice(0, toTaskIndex),
+      active,
+      ...filtered.slice(toTaskIndex),
+    ];
   }
-  return tasks;
+  return [...filtered, active];
 };
 
 /**
