@@ -54,9 +54,10 @@ describe("auth store", () => {
     it("should handle login failure", async () => {
       authService.login.mockRejectedValue(new Error("Invalid credentials"));
 
-      const result = await authStore.login("bad@email.com", "wrong");
+      await expect(authStore.login("bad@email.com", "wrong")).rejects.toThrow(
+        "Invalid credentials",
+      );
 
-      expect(result).toBe("Invalid credentials");
       expect(authStore.error).toBe("Invalid credentials");
       expect(authStore.loading).toBe(false);
     });
@@ -77,7 +78,7 @@ describe("auth store", () => {
     it("should handle getMe failure", async () => {
       authService.whoAmI.mockRejectedValue(new Error("Unauthorized"));
 
-      await authStore.getMe();
+      await expect(authStore.getMe()).rejects.toThrow("Unauthorized");
 
       expect(authStore.user).toBeNull();
       expect(authStore.isAuthenticated).toBe(false);

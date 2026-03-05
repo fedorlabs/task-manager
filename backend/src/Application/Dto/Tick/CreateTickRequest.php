@@ -36,7 +36,7 @@ class CreateTickRequest
         return $this->doneProvided;
     }
 
-    private static function parseIntOrInvalid(mixed $value): ?int
+    private static function parseIntOrInvalid(string|int|float|null $value): ?int
     {
         if ($value === null || $value === '') {
             return null;
@@ -45,7 +45,7 @@ class CreateTickRequest
         return $validated === false ? -1 : (int) $validated;
     }
 
-    private static function parseBoolOrNull(mixed $value): ?bool
+    private static function parseBoolOrNull(string|int|float|bool|null $value): ?bool
     {
         if ($value === null || $value === '') {
             return null;

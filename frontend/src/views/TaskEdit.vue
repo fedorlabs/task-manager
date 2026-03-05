@@ -1,5 +1,5 @@
 <template>
-  <task-card-creator v-if="task" :task-to-edit="task" />
+  <task-card-creator v-if="taskToEdit" :task-to-edit="taskToEdit" />
 </template>
 
 <script setup>
@@ -14,12 +14,16 @@ const route = useRoute();
 const router = useRouter();
 
 // Find the task from the array of tasks by id from the URL string
-const task = tasksStore.getTaskById(route.params.id);
+const rawTask = tasksStore.getTaskById(route.params.id);
 
-if (task) {
-  const taskDate = task.dueDate;
-  task.dueDate = taskDate ? new Date(taskDate) : createNewDate();
-} else {
+const taskToEdit = rawTask
+  ? {
+      ...rawTask,
+      dueDate: rawTask.dueDate ? new Date(rawTask.dueDate) : createNewDate(),
+    }
+  : null;
+
+if (!taskToEdit) {
   // Redirect to the main page if the task is not found
   router.push("/");
 }

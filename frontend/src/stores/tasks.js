@@ -84,7 +84,11 @@ export const useTasksStore = defineStore("tasks", {
           await tasksService.updateTask(task);
           const index = this.tasks.findIndex(({ id }) => id === task.id);
           if (index !== -1) {
-            this.tasks.splice(index, 1, task);
+            this.tasks = [
+              ...this.tasks.slice(0, index),
+              task,
+              ...this.tasks.slice(index + 1),
+            ];
           }
         });
 
@@ -105,10 +109,14 @@ export const useTasksStore = defineStore("tasks", {
         const newTask = await tasksService.updateTask(task);
         const index = this.tasks.findIndex(({ id }) => newTask.id === id);
         if (index !== -1) {
-          if (newTask.userId) {
-            newTask.user = { ...this.getTaskUserById(newTask.userId) };
-          }
-          this.tasks.splice(index, 1, newTask);
+          const taskToStore = newTask.userId
+            ? { ...newTask, user: { ...this.getTaskUserById(newTask.userId) } }
+            : newTask;
+          this.tasks = [
+            ...this.tasks.slice(0, index),
+            taskToStore,
+            ...this.tasks.slice(index + 1),
+          ];
         }
         return newTask;
       });

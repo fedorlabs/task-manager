@@ -32,7 +32,7 @@ export const useCommentsStore = defineStore("comments", {
 
     async addComment(comment) {
       const newComment = await commentsService.createComment(comment);
-      this.comments.push(newComment);
+      this.comments = [...this.comments, newComment];
       return newComment;
     },
   },

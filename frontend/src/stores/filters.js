@@ -25,13 +25,12 @@ export const useFiltersStore = defineStore("filters", {
       const current = [...this[entity]];
       const itemIndex = current.indexOf(item);
 
-      if (itemIndex !== -1) {
-        current.splice(itemIndex, 1);
-      } else {
-        current.push(item);
-      }
+      const next =
+        itemIndex !== -1
+          ? [...current.slice(0, itemIndex), ...current.slice(itemIndex + 1)]
+          : [...current, item];
 
-      this.$patch({ [entity]: current });
+      this.$patch({ [entity]: next });
     },
 
     resetFilters() {
