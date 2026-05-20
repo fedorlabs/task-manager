@@ -18,7 +18,7 @@ class CreateTaskRequest
     #[Assert\PositiveOrZero]
     public ?int $sortOrder = null;
 
-    #[Assert\DateTime]
+    #[Assert\DateTime(format: 'Y-m-d\TH:i:s.vP')]
     public ?string $dueDate = null;
 
     #[Assert\Url]
@@ -43,8 +43,8 @@ class CreateTaskRequest
         $dto->title = trim((string) ($data['title'] ?? ''));
         $dto->description = isset($data['description']) ? (string) $data['description'] : null;
         $dto->sortOrder = self::parseIntOrInvalid($data['sortOrder'] ?? null);
-        $dto->dueDate = isset($data['dueDate']) ? (string) $data['dueDate'] : null;
-        $dto->url = isset($data['url']) ? (string) $data['url'] : null;
+        $dto->dueDate = isset($data['dueDate']) && $data['dueDate'] !== '' ? (string) $data['dueDate'] : null;
+        $dto->url = isset($data['url']) && $data['url'] !== '' ? (string) $data['url'] : null;
         $dto->urlDescription = isset($data['urlDescription']) ? (string) $data['urlDescription'] : null;
         $dto->tags = isset($data['tags']) ? (string) $data['tags'] : null;
         $dto->columnId = self::parseIntOrInvalid($data['columnId'] ?? null);

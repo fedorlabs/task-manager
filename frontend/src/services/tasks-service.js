@@ -21,6 +21,7 @@ class TasksService extends HttpClient {
       dueDate: task.dueDate ? new Date(task.dueDate) : null,
       status: task.statusId ? taskStatuses[task.statusId] : "",
       timeStatus: getTimeStatus(task.dueDate),
+      columnId: task.column?.id ?? null,
     };
   }
 

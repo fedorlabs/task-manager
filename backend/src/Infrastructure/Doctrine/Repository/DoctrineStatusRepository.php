@@ -13,6 +13,8 @@ use Doctrine\Persistence\ManagerRegistry;
 /** @extends ServiceEntityRepository<Status> */
 class DoctrineStatusRepository extends ServiceEntityRepository implements StatusRepositoryInterface
 {
+    use RepositoryOrderTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Status::class);
