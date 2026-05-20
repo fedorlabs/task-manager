@@ -13,6 +13,8 @@ use Doctrine\Persistence\ManagerRegistry;
 /** @extends ServiceEntityRepository<Tick> */
 class DoctrineTickRepository extends ServiceEntityRepository implements TickRepositoryInterface
 {
+    use RepositoryOrderTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Tick::class);

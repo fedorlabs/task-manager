@@ -14,6 +14,8 @@ use Doctrine\Persistence\ManagerRegistry;
 /** @extends ServiceEntityRepository<Task> */
 class DoctrineTaskRepository extends ServiceEntityRepository implements TaskRepositoryInterface
 {
+    use RepositoryOrderTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Task::class);

@@ -13,6 +13,8 @@ use Doctrine\Persistence\ManagerRegistry;
 /** @extends ServiceEntityRepository<User> */
 class DoctrineUserRepository extends ServiceEntityRepository implements UserRepositoryInterface
 {
+    use RepositoryOrderTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
