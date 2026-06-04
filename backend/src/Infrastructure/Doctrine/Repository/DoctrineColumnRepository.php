@@ -13,6 +13,8 @@ use Doctrine\Persistence\ManagerRegistry;
 /** @extends ServiceEntityRepository<Column> */
 class DoctrineColumnRepository extends ServiceEntityRepository implements ColumnRepositoryInterface
 {
+    use RepositoryOrderTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Column::class);

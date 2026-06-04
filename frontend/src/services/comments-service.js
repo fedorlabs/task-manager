@@ -5,12 +5,22 @@ import httpProvider from "@/services/providers";
 const BASE_URL = "/api/comments";
 
 class CommentsService extends HttpClient {
-  fetchComments() {
-    return this.get("");
+  normalizeComment(comment) {
+    return {
+      ...comment,
+      taskId: comment.task?.id ?? null,
+      userId: comment.user?.id ?? null,
+    };
   }
 
-  createComment(comment) {
-    return this.post("", { data: comment });
+  async fetchComments() {
+    const comments = await this.get("");
+    return comments.map((comment) => this.normalizeComment(comment));
+  }
+
+  async createComment(comment) {
+    const newComment = await this.post("", { data: comment });
+    return this.normalizeComment(newComment);
   }
 }
 
