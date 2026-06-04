@@ -30,7 +30,7 @@ class UpdateTaskRequest
     #[Assert\PositiveOrZero]
     public ?int $sortOrder = null;
 
-    #[Assert\DateTime]
+    #[Assert\DateTime(format: 'Y-m-d\TH:i:s.vP')]
     public ?string $dueDate = null;
 
     #[Assert\Url]
