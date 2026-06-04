@@ -41,35 +41,43 @@ describe("withLoading", () => {
     expect(store.error).toBeNull();
   });
 
-  it("should set error message on failure", async () => {
-    await withLoading(store, async () => {
-      throw new Error("Something went wrong");
-    });
+  it("should set error message on failure and re-throw", async () => {
+    await expect(
+      withLoading(store, async () => {
+        throw new Error("Something went wrong");
+      }),
+    ).rejects.toThrow("Something went wrong");
 
     expect(store.error).toBe("Something went wrong");
   });
 
   it("should set loading to false even on failure", async () => {
-    await withLoading(store, async () => {
-      throw new Error("Failure");
-    });
+    await expect(
+      withLoading(store, async () => {
+        throw new Error("Failure");
+      }),
+    ).rejects.toThrow("Failure");
 
     expect(store.loading).toBe(false);
   });
 
-  it("should handle errors without message", async () => {
-    await withLoading(store, async () => {
-      throw {}; // Error without message
-    });
+  it("should handle errors without message and re-throw", async () => {
+    await expect(
+      withLoading(store, async () => {
+        throw {}; // Error without message
+      }),
+    ).rejects.toThrow();
 
     expect(store.error).toBe("Unknown error");
     expect(store.loading).toBe(false);
   });
 
-  it("should handle synchronous exceptions", async () => {
-    await withLoading(store, () => {
-      throw new Error("Sync error");
-    });
+  it("should handle synchronous exceptions and re-throw", async () => {
+    await expect(
+      withLoading(store, () => {
+        throw new Error("Sync error");
+      }),
+    ).rejects.toThrow("Sync error");
 
     expect(store.error).toBe("Sync error");
     expect(store.loading).toBe(false);

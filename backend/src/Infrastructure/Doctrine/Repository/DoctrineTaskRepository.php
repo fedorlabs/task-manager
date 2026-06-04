@@ -8,6 +8,7 @@ use App\Domain\Entity\Task;
 use App\Domain\Entity\User;
 use App\Domain\Repository\TaskRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Infrastructure\Doctrine\Repository\RepositoryOrderTrait;
 use Doctrine\Persistence\ManagerRegistry;
 
 /** @extends ServiceEntityRepository<Task> */
@@ -47,20 +48,24 @@ class DoctrineTaskRepository extends ServiceEntityRepository implements TaskRepo
         int $offset
     ): array
     {
-        $qb = $this->createQueryBuilder('t');
+        $qb = $this->createQueryBuilder('t')
+            ->leftJoin('t.column', 'c')
+            ->addSelect('c')
+            ->leftJoin('t.status', 's')
+            ->addSelect('s')
+            ->leftJoin('t.user', 'u')
+            ->addSelect('u');
 
         if ($user) {
             $qb->andWhere('t.user = :user')->setParameter('user', $user);
         }
         if ($columnId !== null) {
             $qb
-                ->join('t.column', 'c')
                 ->andWhere('c.id = :columnId')
                 ->setParameter('columnId', $columnId);
         }
         if ($statusId !== null) {
             $qb
-                ->join('t.status', 's')
                 ->andWhere('s.id = :statusId')
                 ->setParameter('statusId', $statusId);
         }
@@ -125,10 +130,6 @@ class DoctrineTaskRepository extends ServiceEntityRepository implements TaskRepo
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
-    private function normalizeOrder(string $order): string
-    {
-        return strtolower($order) === 'desc' ? 'DESC' : 'ASC';
-    }
 
     public function save(Task $task): void
     {

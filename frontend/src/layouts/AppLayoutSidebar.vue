@@ -81,15 +81,13 @@ function moveTask(active, toTask) {
   const activeClone = { ...active, columnId: toColumnId };
   // Move the active task in the list of tasks
   const resultTasks = addActive(activeClone, toTask, targetColumnTasks);
-  const tasksToUpdate = [];
-
-  // Sort tasks in a column
-  resultTasks.forEach((task, index) => {
+  // Collect tasks that need sortOrder update
+  const tasksToUpdate = resultTasks.reduce((acc, task, index) => {
     if (task.sortOrder !== index || task.id === active.id) {
-      const newTask = { ...task, sortOrder: index };
-      tasksToUpdate.push(newTask);
+      acc.push({ ...task, sortOrder: index });
     }
-  });
+    return acc;
+  }, []);
   tasksStore.updateTasks(tasksToUpdate);
 }
 </script>

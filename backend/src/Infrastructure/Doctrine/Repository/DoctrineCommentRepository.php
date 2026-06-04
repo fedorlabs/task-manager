@@ -8,6 +8,7 @@ use App\Domain\Entity\Comment;
 use App\Domain\Entity\User;
 use App\Domain\Repository\CommentRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Infrastructure\Doctrine\Repository\RepositoryOrderTrait;
 use Doctrine\Persistence\ManagerRegistry;
 
 /** @extends ServiceEntityRepository<Comment> */
@@ -115,10 +116,6 @@ class DoctrineCommentRepository extends ServiceEntityRepository implements Comme
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
-    private function normalizeOrder(string $order): string
-    {
-        return strtolower($order) === 'desc' ? 'DESC' : 'ASC';
-    }
 
     public function save(Comment $comment): void
     {

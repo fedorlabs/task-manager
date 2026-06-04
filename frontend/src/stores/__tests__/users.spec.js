@@ -59,7 +59,7 @@ describe("users store", () => {
     it("should handle fetch error", async () => {
       userService.fetchUsers.mockRejectedValue(new Error("Server error"));
 
-      await usersStore.fetchUsers();
+      await expect(usersStore.fetchUsers()).rejects.toThrow("Server error");
 
       expect(usersStore.users).toEqual([]);
       expect(usersStore.error).toBe("Server error");

@@ -62,7 +62,7 @@ describe("ticks store", () => {
     it("should handle fetch error", async () => {
       ticksService.fetchTicks.mockRejectedValue(new Error("Connection lost"));
 
-      await ticksStore.fetchTicks();
+      await expect(ticksStore.fetchTicks()).rejects.toThrow("Connection lost");
 
       expect(ticksStore.ticks).toEqual([]);
       expect(ticksStore.error).toBe("Connection lost");

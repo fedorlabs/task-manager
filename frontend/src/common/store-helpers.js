@@ -1,10 +1,12 @@
 /**
  * Wraps an async store action with loading/error state management.
- * Errors are caught and stored in `store.error`, not re-thrown.
+ * Errors are stored in `store.error` for UI display, then re-thrown
+ * so callers can handle them (show toast, rollback, etc.).
  *
  * @param {Object} store - Pinia store instance (must have `loading` and `error` state)
  * @param {Function} action - Async function to execute
- * @returns {Promise<*>} - Resolves with action result or undefined on error
+ * @returns {Promise<*>} - Resolves with action result
+ * @throws {Error} - Re-throws the original error after storing it
  */
 export async function withLoading(store, action) {
   store.loading = true;
@@ -13,6 +15,7 @@ export async function withLoading(store, action) {
     return await action();
   } catch (e) {
     store.error = e.message || "Unknown error";
+    throw e;
   } finally {
     store.loading = false;
   }

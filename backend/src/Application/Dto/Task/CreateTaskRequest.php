@@ -52,7 +52,7 @@ class CreateTaskRequest
         return $dto;
     }
 
-    private static function parseIntOrInvalid(mixed $value): ?int
+    private static function parseIntOrInvalid(string|int|float|null $value): ?int
     {
         if ($value === null || $value === '') {
             return null;

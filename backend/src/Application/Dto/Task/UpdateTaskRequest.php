@@ -8,6 +8,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class UpdateTaskRequest
 {
+    public const FIELD_TITLE = 'title';
+    public const FIELD_DESCRIPTION = 'description';
+    public const FIELD_SORT_ORDER = 'sortOrder';
+    public const FIELD_DUE_DATE = 'dueDate';
+    public const FIELD_URL = 'url';
+    public const FIELD_URL_DESCRIPTION = 'urlDescription';
+    public const FIELD_TAGS = 'tags';
+    public const FIELD_COLUMN_ID = 'columnId';
+    public const FIELD_STATUS_ID = 'statusId';
+
     /** @var array<string, bool> */
     private array $present = [];
 
@@ -42,41 +52,41 @@ class UpdateTaskRequest
     public static function fromArray(array $data): self
     {
         $dto = new self();
-        if (array_key_exists('title', $data)) {
-            $dto->present['title'] = true;
-            $dto->title = trim((string) $data['title']);
+        if (array_key_exists(self::FIELD_TITLE, $data)) {
+            $dto->present[self::FIELD_TITLE] = true;
+            $dto->title = trim((string) $data[self::FIELD_TITLE]);
         }
-        if (array_key_exists('description', $data)) {
-            $dto->present['description'] = true;
-            $dto->description = isset($data['description']) ? (string) $data['description'] : null;
+        if (array_key_exists(self::FIELD_DESCRIPTION, $data)) {
+            $dto->present[self::FIELD_DESCRIPTION] = true;
+            $dto->description = isset($data[self::FIELD_DESCRIPTION]) ? (string) $data[self::FIELD_DESCRIPTION] : null;
         }
-        if (array_key_exists('sortOrder', $data)) {
-            $dto->present['sortOrder'] = true;
-            $dto->sortOrder = self::parseIntOrInvalid($data['sortOrder']);
+        if (array_key_exists(self::FIELD_SORT_ORDER, $data)) {
+            $dto->present[self::FIELD_SORT_ORDER] = true;
+            $dto->sortOrder = self::parseIntOrInvalid($data[self::FIELD_SORT_ORDER]);
         }
-        if (array_key_exists('dueDate', $data)) {
-            $dto->present['dueDate'] = true;
-            $dto->dueDate = isset($data['dueDate']) ? (string) $data['dueDate'] : null;
+        if (array_key_exists(self::FIELD_DUE_DATE, $data)) {
+            $dto->present[self::FIELD_DUE_DATE] = true;
+            $dto->dueDate = isset($data[self::FIELD_DUE_DATE]) ? (string) $data[self::FIELD_DUE_DATE] : null;
         }
-        if (array_key_exists('url', $data)) {
-            $dto->present['url'] = true;
-            $dto->url = isset($data['url']) ? (string) $data['url'] : null;
+        if (array_key_exists(self::FIELD_URL, $data)) {
+            $dto->present[self::FIELD_URL] = true;
+            $dto->url = isset($data[self::FIELD_URL]) ? (string) $data[self::FIELD_URL] : null;
         }
-        if (array_key_exists('urlDescription', $data)) {
-            $dto->present['urlDescription'] = true;
-            $dto->urlDescription = isset($data['urlDescription']) ? (string) $data['urlDescription'] : null;
+        if (array_key_exists(self::FIELD_URL_DESCRIPTION, $data)) {
+            $dto->present[self::FIELD_URL_DESCRIPTION] = true;
+            $dto->urlDescription = isset($data[self::FIELD_URL_DESCRIPTION]) ? (string) $data[self::FIELD_URL_DESCRIPTION] : null;
         }
-        if (array_key_exists('tags', $data)) {
-            $dto->present['tags'] = true;
-            $dto->tags = isset($data['tags']) ? (string) $data['tags'] : null;
+        if (array_key_exists(self::FIELD_TAGS, $data)) {
+            $dto->present[self::FIELD_TAGS] = true;
+            $dto->tags = isset($data[self::FIELD_TAGS]) ? (string) $data[self::FIELD_TAGS] : null;
         }
-        if (array_key_exists('columnId', $data)) {
-            $dto->present['columnId'] = true;
-            $dto->columnId = self::parseIntOrInvalid($data['columnId']);
+        if (array_key_exists(self::FIELD_COLUMN_ID, $data)) {
+            $dto->present[self::FIELD_COLUMN_ID] = true;
+            $dto->columnId = self::parseIntOrInvalid($data[self::FIELD_COLUMN_ID]);
         }
-        if (array_key_exists('statusId', $data)) {
-            $dto->present['statusId'] = true;
-            $dto->statusId = self::parseIntOrInvalid($data['statusId']);
+        if (array_key_exists(self::FIELD_STATUS_ID, $data)) {
+            $dto->present[self::FIELD_STATUS_ID] = true;
+            $dto->statusId = self::parseIntOrInvalid($data[self::FIELD_STATUS_ID]);
         }
         return $dto;
     }
@@ -86,7 +96,7 @@ class UpdateTaskRequest
         return $this->present[$field] ?? false;
     }
 
-    private static function parseIntOrInvalid(mixed $value): ?int
+    private static function parseIntOrInvalid(string|int|float|null $value): ?int
     {
         if ($value === null || $value === '') {
             return null;

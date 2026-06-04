@@ -23,7 +23,7 @@ export const useTicksStore = defineStore("ticks", {
 
     async addTick(tick) {
       const newTick = await ticksService.createTick(tick);
-      this.ticks.push(newTick);
+      this.ticks = [...this.ticks, newTick];
       return newTick;
     },
 
@@ -31,7 +31,11 @@ export const useTicksStore = defineStore("ticks", {
       await ticksService.updateTick(tick);
       const index = this.ticks.findIndex(({ id }) => id === tick.id);
       if (index !== -1) {
-        this.ticks.splice(index, 1, tick);
+        this.ticks = [
+          ...this.ticks.slice(0, index),
+          tick,
+          ...this.ticks.slice(index + 1),
+        ];
       }
     },
 
