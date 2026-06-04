@@ -1,28 +1,28 @@
-# Check out https://hub.docker.com/_/node to select a new base image
-FROM node:20-slim
+FROM php:8.2-fpm
 
-# Set to a non-root built-in user `node`
-USER node
+RUN apt-get update && apt-get install -y \
+    bash \
+    git \
+    unzip \
+    libpq-dev \
+    libzip-dev \
+    openssl \
+    && docker-php-ext-install pdo pdo_pgsql zip \
+    && pecl install apcu && docker-php-ext-enable apcu \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Create app directory (with user `node`)
-RUN mkdir -p /home/node/app
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-WORKDIR /home/node/app
+WORKDIR /backend
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY --chown=node package*.json ./
+COPY composer.json composer.lock* ./
+RUN composer install --no-scripts --no-autoloader --prefer-dist || true
 
-RUN npm ci
+COPY . .
+RUN composer dump-autoload --optimize || true
 
-# Bundle app source code
-COPY --chown=node . .
+RUN mkdir -p var/cache var/log config/jwt \
+    && chmod -R 777 var
 
-RUN npm run build
-
-# Bind to all network interfaces so that it can be mapped to the host OS
-ENV HOST=0.0.0.0 PORT=3000
-
-EXPOSE ${PORT}
-CMD [ "node", "." ]
+EXPOSE 8000
+CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]

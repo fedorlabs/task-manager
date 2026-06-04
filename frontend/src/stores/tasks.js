@@ -5,99 +5,106 @@ import { tasksService } from "@/services";
 export const useTasksStore = defineStore("tasks", {
   state: () => ({
     tasks: [],
+    loading: false,
+    error: null,
   }),
+
   getters: {
-    filteredTasks: (state) => {
+    filteredTasks(state) {
       const filtersStore = useFiltersStore();
+      const { search, users, statuses } = filtersStore.filters;
 
-      const filtersAreEmpty = Object.values(filtersStore.filters).every(
-        (value) => !value.length
-      );
-
-      if (filtersAreEmpty) {
-        // Return all tasks if no filters are applied
+      const hasFilters = search.length || users.length || statuses.length;
+      if (!hasFilters) {
         return state.tasks;
       }
 
-      // Apply search filter
-      const searchFilter = (task) =>
-        task.title
-          .toLowerCase()
-          .includes(filtersStore.filters.search.toLowerCase().trim());
-
-      // Apply filter by users
-      const usersFilter = (task) =>
-        filtersStore.filters.users.some((userId) => userId === task.userId);
-
-      // Apply filter by statuses
-      const statusesFilter = (task) =>
-        filtersStore.filters.statuses.some(
-          (el) => el === task.status || el === task.timeStatus
-        );
-
-      // Process tasks according to filters
       return state.tasks.filter((task) => {
-        let result = {
-          search: searchFilter,
-          users: usersFilter,
-          statuses: statusesFilter,
-        };
-        // If there are filters, then apply them
-        return Object.entries(result).every(
-          ([key, callback]) =>
-            !filtersStore.filters[key].length || callback(task)
-        );
+        if (search.length) {
+          const match = task.title
+            .toLowerCase()
+            .includes(search.toLowerCase().trim());
+          if (!match) return false;
+        }
+
+        if (users.length) {
+          if (!users.includes(task.userId)) return false;
+        }
+
+        if (statuses.length) {
+          const match = statuses.some(
+            (s) => s === task.status || s === task.timeStatus,
+          );
+          if (!match) return false;
+        }
+
+        return true;
       });
     },
+
     getTaskById: (state) => (id) => {
       const ticksStore = useTicksStore();
       const usersStore = useUsersStore();
-      const task = state.tasks.find((task) => +task.id === +id);
+      const task = state.tasks.find((t) => +t.id === +id);
       if (!task) return null;
-      // Adding subtasks
-      task.ticks = ticksStore.getTicksByTaskId(task.id);
-      // Adding a user
-      task.user = usersStore.users.find((user) => user.id === task.userId);
-      return task;
+
+      return {
+        ...task,
+        ticks: ticksStore.getTicksByTaskId(task.id),
+        user: usersStore.users.find((u) => u.id === task.userId) ?? null,
+      };
     },
+
     getTaskUserById: () => (id) => {
       const usersStore = useUsersStore();
-      return usersStore.users.find((user) => user.id === id);
+      return usersStore.users.find((u) => u.id === id) ?? null;
     },
-    // Filter tasks that belong to the backlog (columnId === null)
-    sidebarTasks: (state) => {
-      return state.filteredTasks
+
+    sidebarTasks() {
+      return this.filteredTasks
         .filter((task) => !task.columnId)
         .sort((a, b) => a.sortOrder - b.sortOrder);
     },
   },
+
   actions: {
     async fetchTasks() {
-      this.tasks = await tasksService.fetchTasks();
+      this.loading = true;
+      this.error = null;
+      try {
+        this.tasks = await tasksService.fetchTasks();
+      } catch (e) {
+        this.error = e.message;
+      } finally {
+        this.loading = false;
+      }
     },
-    updateTasks(tasksToUpdate) {
-      // Go through the current tasks in storage, if there is an index, then update
-      tasksToUpdate.forEach(async (task) => {
-        const index = this.tasks.findIndex(({ id }) => id === task.id);
-        // ~-1 return 0, then false
-        if (~index) {
+
+    async updateTasks(tasksToUpdate) {
+      const updates = tasksToUpdate
+        .filter((task) => this.tasks.findIndex(({ id }) => id === task.id) !== -1)
+        .map(async (task) => {
           await tasksService.updateTask(task);
-          this.tasks.splice(index, 1, task);
-        }
-      });
+          const index = this.tasks.findIndex(({ id }) => id === task.id);
+          if (index !== -1) {
+            this.tasks.splice(index, 1, task);
+          }
+        });
+
+      await Promise.all(updates);
     },
+
     async addTask(task) {
-      // Add the task to the end of the task list in the backlog
-      task.sortOrder = this.tasks.filter((task) => !task.columnId).length;
+      task.sortOrder = this.tasks.filter((t) => !t.columnId).length;
       const newTask = await tasksService.createTask(task);
-      // Add a task to the array
       this.tasks = [...this.tasks, newTask];
       return newTask;
     },
+
     async editTask(task) {
       const newTask = await tasksService.updateTask(task);
       const index = this.tasks.findIndex(({ id }) => newTask.id === id);
-      if (~index) {
+      if (index !== -1) {
         if (newTask.userId) {
           newTask.user = { ...this.getTaskUserById(newTask.userId) };
         }
@@ -105,6 +112,7 @@ export const useTasksStore = defineStore("tasks", {
       }
       return newTask;
     },
+
     async deleteTask(id) {
       await tasksService.deleteTask(id);
       this.tasks = this.tasks.filter((task) => task.id !== id);
