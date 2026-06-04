@@ -153,7 +153,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, toRaw } from "vue";
 import TasksCardCreatorUserSelector from "./TaskCardCreatorUserSelector.vue";
 import TasksCardCreatorDueDateSelector from "./TaskCardCreatorDueDateSelector.vue";
 import TaskCardViewTicksList from "./TaskCardViewTicksList.vue";
@@ -215,7 +215,12 @@ const ticksStore = useTicksStore();
 
 // Determine if we are working on editing a task or creating a new one
 const taskToWork = props.taskToEdit
-  ? structuredClone(props.taskToEdit)
+  ? {
+      ...JSON.parse(JSON.stringify(toRaw(props.taskToEdit))),
+      dueDate: props.taskToEdit.dueDate
+        ? new Date(props.taskToEdit.dueDate)
+        : createNewDate(),
+    }
   : createNewTask();
 
 const task = ref(taskToWork);

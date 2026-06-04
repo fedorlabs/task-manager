@@ -11,15 +11,21 @@ class TasksService extends HttpClient {
     // Removing unnecessary frontend-only parameters from the task
     // eslint-disable-next-line no-unused-vars
     const { ticks, comments, status, timeStatus, user, ...request } = task;
+    // Normalize dueDate format for Symfony validator (convert Z to +00:00)
+    if (request.dueDate instanceof Date) {
+      request.dueDate = request.dueDate.toISOString().replace("Z", "+00:00");
+    }
     return request;
   }
 
   normalizeTask(task) {
+    const statusId = task.statusId ?? task.status?.id ?? null;
     return {
       ...task,
       ticks: task.ticks || [],
       dueDate: task.dueDate ? new Date(task.dueDate) : null,
-      status: task.statusId ? taskStatuses[task.statusId] : "",
+      statusId,
+      status: statusId ? taskStatuses[statusId] : "",
       timeStatus: getTimeStatus(task.dueDate),
       columnId: task.column?.id ?? null,
     };
