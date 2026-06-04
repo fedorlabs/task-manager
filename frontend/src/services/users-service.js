@@ -5,12 +5,8 @@ import httpProvider from "@/services/providers";
 const BASE_URL = "/api/users";
 
 class UsersService extends HttpClient {
-  async fetchUsers() {
-    try {
-      return this.get("/");
-    } catch (e) {
-      throw Error(e);
-    }
+  fetchUsers() {
+    return this.get("");
   }
 }
 

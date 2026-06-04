@@ -38,7 +38,7 @@ export const getTimeStatus = (dueDate) => {
   if (timeDelta > DAY_IN_MILLISEC) {
     return "";
   }
-  return timeDelta < 0 ? timeStatuses.DEADLINE : timeStatuses.EXPIRED;
+  return timeDelta < 0 ? timeStatuses.EXPIRED : timeStatuses.DEADLINE;
 };
 
 /**
@@ -129,11 +129,9 @@ export const getTimeAgo = (date) => {
   }
   // Determine the correct ending
   function getPronounce(number, single, pluralTwoFour, pluralFive) {
-    return number === 1
-      ? single
-      : number > 1 && number < 5
-      ? pluralTwoFour
-      : pluralFive;
+    if (number === 1) return single;
+    if (number > 1 && number < 5) return pluralTwoFour;
+    return pluralFive;
   }
   // Check if the task was created more than a year ago
   let interval = seconds / YEAR_IN_SEC;
@@ -174,7 +172,7 @@ export const getTimeAgo = (date) => {
 };
 
 /**
- * (DueDate шаблон для TaskView)
+ * (Due date template for TaskView)
  *
  * @param date
  * @returns {string}
@@ -214,9 +212,12 @@ export const createNewDate = () => {
  * Path to files on the server
  *
  * @param path
- * @returns {`/api/${string}`}
+ * @returns {string}
  */
 export const getPublicImage = (path) => {
+  if (!path) {
+    return "";
+  }
   const publicUrl = "/api";
   return `${publicUrl}/${path}`;
 };

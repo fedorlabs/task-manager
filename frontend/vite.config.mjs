@@ -1,25 +1,29 @@
-import { fileURLToPath, URL } from "url";
+import { fileURLToPath, URL } from "node:url";
 
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 
-// only for local dev
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue()], // include plugin vue
+  plugins: [vue()],
   test: {
     // JSDOM is a library for Node.js that allows you to emulate a browser environment in tests.
-    // JSDOM is used to run tests in Node.js, not in the browser. Unlike Vitest, JSDOM is not a testing framework,
-    // but only provides tools to emulate a browser environment.
-    environment: "jsdom", // vitest
+    environment: "jsdom",
   },
   build: {
     target: "esnext", // Support for top-level await
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: "modern-compiler",
+      },
+    },
+  },
   resolve: {
     alias: {
       // A built-in method in Node.js that is used to convert a URL object to a file path string on the file system
-      "@": fileURLToPath(new URL("./src", import.meta.url)), // path to project src files in directory
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
   // sets the settings for the local development server, including the host and port, as well as the proxy server for accessing the API

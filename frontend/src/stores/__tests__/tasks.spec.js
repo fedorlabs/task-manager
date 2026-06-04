@@ -16,7 +16,12 @@ vi.mock("@/services", () => ({
   },
 }));
 
-import { useTasksStore, useFiltersStore, useTicksStore, useUsersStore } from "@/stores";
+import {
+  useTasksStore,
+  useFiltersStore,
+  useTicksStore,
+  useUsersStore,
+} from "@/stores";
 import { tasksService } from "@/services";
 
 describe("tasks store", () => {

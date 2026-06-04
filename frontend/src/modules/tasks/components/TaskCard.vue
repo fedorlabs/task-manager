@@ -55,17 +55,15 @@ import { useRouter } from "vue-router";
 import { useUsersStore } from "@/stores";
 import { computed } from "vue";
 
-const usersStore = useUsersStore();
-const router = useRouter();
-
 const props = defineProps({
   task: {
     type: Object,
     required: true,
   },
 });
-
 defineEmits(["drop", "click"]);
+const usersStore = useUsersStore();
+const router = useRouter();
 
 const taskUser = computed(() => {
   return usersStore.users.find((user) => user.id === props.task.userId);

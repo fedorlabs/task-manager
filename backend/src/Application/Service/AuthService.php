@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Application\Service;
 
+use App\Application\Dto\Auth\SignupRequest;
 use App\Domain\Entity\User;
+use App\Domain\Exception\NotFoundException;
+use App\Domain\Exception\ValidationException;
 use App\Domain\Repository\UserRepositoryInterface;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AuthService
@@ -17,19 +18,19 @@ class AuthService
         private readonly UserPasswordHasherInterface $passwordHasher,
     ) {}
 
-    public function register(string $name, string $email, string $password, bool $isAdmin = false, ?string $avatar = null): User
+    public function register(SignupRequest $dto): User
     {
-        $existing = $this->userRepository->findByEmail($email);
+        $existing = $this->userRepository->findByEmail($dto->email);
         if ($existing) {
-            throw new BadRequestHttpException('An error occurred during registration');
+            throw new ValidationException('Email is already in use');
         }
 
         $user = new User();
-        $user->setName($name);
-        $user->setEmail($email);
-        $user->setIsAdmin($isAdmin);
-        $user->setAvatar($avatar);
-        $user->setPassword($this->passwordHasher->hashPassword($user, $password));
+        $user->setName($dto->name);
+        $user->setEmail($dto->email);
+        $user->setIsAdmin(false);
+        $user->setAvatar($dto->avatar);
+        $user->setPassword($this->passwordHasher->hashPassword($user, $dto->password));
 
         $this->userRepository->save($user);
 
@@ -40,7 +41,7 @@ class AuthService
     {
         $user = $this->userRepository->findById($userId);
         if (!$user) {
-            throw new UnauthorizedHttpException('Bearer', 'The user is not authorized');
+            throw new NotFoundException('User not found');
         }
         return $user;
     }

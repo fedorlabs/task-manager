@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { ticksService } from "@/services";
+import { withLoading } from "@/common/store-helpers";
 
 export const useTicksStore = defineStore("ticks", {
   state: () => ({
@@ -15,15 +16,9 @@ export const useTicksStore = defineStore("ticks", {
 
   actions: {
     async fetchTicks() {
-      this.loading = true;
-      this.error = null;
-      try {
+      return withLoading(this, async () => {
         this.ticks = await ticksService.fetchTicks();
-      } catch (e) {
-        this.error = e.message;
-      } finally {
-        this.loading = false;
-      }
+      });
     },
 
     async addTick(tick) {

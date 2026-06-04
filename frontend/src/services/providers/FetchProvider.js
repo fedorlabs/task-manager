@@ -1,92 +1,91 @@
 export default class FetchProvider {
-    // Errors
-    interceptors = []
+  // Errors
+  interceptors = [];
 
-    // Method for adding query parameters
-    computeQueryParams(query) {
-        if (!query) {
-            return ''
-        }
-        // For example this code translate to "?name=John&age=30&city=New+York"
-        // const query = {
-        //     name: 'John',
-        //     age: 30,
-        //     city: 'New York'
-        // };
-        const queryParams = new URLSearchParams(query)
-        return '?' + queryParams.toString()
+  // Method for adding query parameters
+  computeQueryParams(query) {
+    if (!query) {
+      return "";
+    }
+    const queryParams = new URLSearchParams(query);
+    return `?${queryParams.toString()}`;
+  }
+
+  // Method for a specific request
+  async request(options) {
+    const body = options.data ? JSON.stringify(options.data) : null;
+
+    try {
+      const response = await fetch(
+        options.baseUrl + options.path + this.computeQueryParams(options.query),
+        { headers: options.headers, body, method: options.method },
+      );
+
+      if (!response.ok) {
+        await this.onError(response);
+        return;
+      }
+
+      // No content or status > 201 — return response as-is
+      if (response.status === 204 || response.status > 201) {
+        return response;
+      }
+
+      return await response.json();
+    } catch (error) {
+      // Re-throw network errors and already-processed API errors
+      if (error.message) {
+        throw error;
+      }
+      throw new Error("Network error");
+    }
+  }
+
+  addInterceptor(interceptor) {
+    if (interceptor && interceptor.onError) {
+      this.interceptors.push(interceptor);
+    } else {
+      throw Error("Interceptor is not supported");
+    }
+    return this;
+  }
+
+  // Error from Promise
+  async onError(response) {
+    let message = "Unknown error";
+    let statusCode = response.status;
+
+    try {
+      const data = await response.json();
+      message = data.error?.message || data.message || message;
+      statusCode = data.error?.statusCode || statusCode;
+    } catch {
+      message = response.statusText || message;
     }
 
-    // Method for a specific request
-    request(options) {
-        const body = options.data ? JSON.stringify(options.data) : null
-        return fetch(
-            // URL + path + query
-            options.baseUrl + options.path + this.computeQueryParams(options.query),
-            {headers: options.headers, body, method: options.method}
-        )
-            .then((response) => {
-                // Response code not in range 200-299
-                if (!response.ok) {
-                    return Promise.reject(response)
-                }
-                return response
-            })
-            .then((response) => {
-                if (response.status > 201) return Promise.resolve(response)
-                // Convert body to json format
-                return response.json()
-            })
-            .then((data) => {
-                return data
-            })
-            .catch(async (response) => {
-                const message = await this.onError(response)
-                throw Error(message)
-            })
-    }
+    // Notify interceptors
+    this.interceptors.forEach((interceptor) => {
+      if (interceptor.onError) {
+        interceptor.onError(statusCode, message);
+      }
+    });
 
-    addInterceptor(interceptor) {
-        // Interceptor has error
-        if (interceptor && interceptor.onError) {
-            this.interceptors.push(interceptor)
-        } else {
-            throw Error('Interceptor не поддерживается')
-        }
-        return this
-    }
+    throw new Error(message);
+  }
 
-    // Error from Promise
-    async onError(response) {
-        if (response.json) {
-            // Retrieve values from an object and assign them to variables with appropriate names
-            const {error} = await response.json()
-            const {message, statusCode} = error
-            // If the interceptor object has an onError method, then it will be called with two arguments: statusCode and message.
-            this.interceptors.forEach((interceptor) => {
-                if (interceptor.onError) {
-                    interceptor.onError(statusCode, message)
-                }
-            })
-            throw Error(message)
-        } else if (response.message) {
-            throw Error(response.message)
-        }
-    }
+  get(path, requestOptions) {
+    return this.request({ path, method: "GET", ...requestOptions });
+  }
 
-    get(path, requestOptions) {
-        return this.request({path, method: 'GET', ...requestOptions})
-    }
+  post(path, requestOptions) {
+    return this.request({ path, method: "POST", ...requestOptions });
+  }
 
-    post(path, requestOptions) {
-        return this.request({path, method: 'POST', ...requestOptions})
-    }
+  put(path, requestOptions) {
+    return this.request({ path, method: "PUT", ...requestOptions });
+  }
 
-    put(path, requestOptions) {
-        return this.request({path, method: 'PUT', ...requestOptions})
-    }
-
-    delete(path, requestOptions) {
-        return this.request({path, method: 'DELETE', ...requestOptions})
-    }
+  delete(path, requestOptions) {
+    return this.request({ path, method: "DELETE", ...requestOptions });
+  }
 }

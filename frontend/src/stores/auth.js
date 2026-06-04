@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { authService } from "../services";
 import { setToken, removeToken } from "@/services/token-manager";
+import { withLoading } from "@/common/store-helpers";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
@@ -16,31 +17,23 @@ export const useAuthStore = defineStore("auth", {
 
   actions: {
     async login(email, password) {
-      this.loading = true;
-      this.error = null;
-      try {
+      const result = await withLoading(this, async () => {
         const data = await authService.login(email, password);
         setToken(data.token);
         return "ok";
-      } catch (e) {
-        this.error = e.message;
-        return e.message;
-      } finally {
-        this.loading = false;
-      }
+      });
+      // withLoading swallows errors, return error message if not "ok"
+      return result ?? this.error;
     },
 
     async getMe() {
-      this.loading = true;
-      this.error = null;
-      try {
+      const result = await withLoading(this, async () => {
         this.user = await authService.whoAmI();
-      } catch (e) {
+      });
+      if (this.error) {
         this.user = null;
-        this.error = e.message;
-      } finally {
-        this.loading = false;
       }
+      return result;
     },
 
     async logout() {

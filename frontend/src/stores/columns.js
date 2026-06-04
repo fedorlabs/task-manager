@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { columnsService } from "@/services";
+import { withLoading } from "@/common/store-helpers";
 
 export const useColumnsStore = defineStore("columns", {
   state: () => ({
@@ -12,15 +13,9 @@ export const useColumnsStore = defineStore("columns", {
 
   actions: {
     async fetchColumns() {
-      this.loading = true;
-      this.error = null;
-      try {
+      return withLoading(this, async () => {
         this.columns = await columnsService.fetchColumns();
-      } catch (e) {
-        this.error = e.message;
-      } finally {
-        this.loading = false;
-      }
+      });
     },
 
     async addColumn() {

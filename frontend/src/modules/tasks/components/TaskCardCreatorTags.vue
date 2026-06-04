@@ -1,14 +1,12 @@
 <template>
   <div class="task-card__tags">
-    <div class="task-card__tags--text">
-      Add tags separated by a symbol #
-    </div>
+    <div class="task-card__tags--text">Add tags separated by a symbol #</div>
     <transition name="replace">
       <task-card-creator-tags-analyzer
         v-if="showAnalyzer"
         class="task-card__tags-analyzer"
         :tags="tags"
-        @setTags="setTags"
+        @set-tags="setTags"
       />
     </transition>
   </div>
@@ -18,7 +16,7 @@
 import { ref } from "vue";
 import TaskCardCreatorTagsAnalyzer from "./TaskCardCreatorTagsAnalyzer.vue";
 
-const props = defineProps({
+defineProps({
   tags: {
     type: String,
     required: true,

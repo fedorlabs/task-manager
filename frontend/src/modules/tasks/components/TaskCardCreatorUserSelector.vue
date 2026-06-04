@@ -47,20 +47,21 @@ import { getPublicImage } from "@/common/helpers";
 import AppIcon from "@/common/components/AppIcon.vue";
 import { useUsersStore } from "@/stores";
 
-const usersStore = useUsersStore();
-
 const props = defineProps({
   modelValue: {
     type: [String],
     default: null,
   },
 });
+
 const emits = defineEmits(["update:modelValue"]);
+
+const usersStore = useUsersStore();
 
 const isMenuOpened = ref(false);
 
 const currentWorker = computed(() =>
-  usersStore.users.find(({ id }) => id === props.modelValue)
+  usersStore.users.find(({ id }) => id === props.modelValue),
 );
 
 function setUser(id) {

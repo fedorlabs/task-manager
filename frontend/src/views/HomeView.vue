@@ -21,7 +21,7 @@
                 class="user-filter__item"
                 :class="{
                   active: filtersStore.filters.users.some(
-                    (id) => id === user.id
+                    (id) => id === user.id,
                   ),
                 }"
                 @click="
@@ -31,7 +31,7 @@
                 <a class="user-filter__button">
                   <img
                     :src="getPublicImage(user.avatar)"
-                    alt="Аватар юзера"
+                    alt="User avatar"
                     width="24"
                     height="24"
                   />
@@ -48,7 +48,7 @@
                 class="meta-filter__item"
                 :class="{
                   active: filtersStore.filters.statuses.some(
-                    (s) => s === value
+                    (s) => s === value,
                   ),
                 }"
                 @click="

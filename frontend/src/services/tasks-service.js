@@ -8,10 +8,12 @@ const BASE_URL = "/api/tasks";
 
 class TasksService extends HttpClient {
   createRequest(task) {
-    // Removing unnecessary parameters from the task
+    // Removing unnecessary frontend-only parameters from the task
+    // eslint-disable-next-line no-unused-vars
     const { ticks, comments, status, timeStatus, user, ...request } = task;
     return request;
   }
+
   normalizeTask(task) {
     return {
       ...task,
@@ -21,36 +23,24 @@ class TasksService extends HttpClient {
       timeStatus: getTimeStatus(task.dueDate),
     };
   }
+
   async fetchTasks() {
-    try {
-      const tasks = await this.get("/");
-      return tasks.map((task) => this.normalizeTask(task));
-    } catch (e) {
-      throw Error(e);
-    }
+    const tasks = await this.get("");
+    return tasks.map((task) => this.normalizeTask(task));
   }
+
   async createTask(task) {
-    try {
-      const newTask = await this.post("/", { data: this.createRequest(task) });
-      return this.normalizeTask(newTask);
-    } catch (e) {
-      throw Error(e);
-    }
+    const newTask = await this.post("", { data: this.createRequest(task) });
+    return this.normalizeTask(newTask);
   }
+
   async updateTask(task) {
-    try {
-      await this.put(`/${task.id}`, { data: this.createRequest(task) });
-      return this.normalizeTask(task);
-    } catch (e) {
-      throw Error(e);
-    }
+    await this.put(`/${task.id}`, { data: this.createRequest(task) });
+    return this.normalizeTask(task);
   }
+
   async deleteTask(id) {
-    try {
-      await this.delete(`/${id}`);
-    } catch (e) {
-      throw Error(e);
-    }
+    await this.delete(`/${id}`);
   }
 }
 

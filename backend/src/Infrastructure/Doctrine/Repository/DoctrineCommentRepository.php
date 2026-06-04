@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Infrastructure\Doctrine\Repository;
 
 use App\Domain\Entity\Comment;
+use App\Domain\Entity\User;
 use App\Domain\Repository\CommentRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/** @extends ServiceEntityRepository<Comment> */
 class DoctrineCommentRepository extends ServiceEntityRepository implements CommentRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
@@ -33,9 +35,89 @@ class DoctrineCommentRepository extends ServiceEntityRepository implements Comme
         return $this->findBy(['task' => $taskId]);
     }
 
+    /** @return Comment[] */
+    public function findByUser(User $user): array
+    {
+        return $this->findBy(['user' => $user]);
+    }
+
+    /** @return Comment[] */
+    public function findByFilters(
+        ?User $user,
+        ?int $taskId,
+        ?string $q,
+        ?string $sort,
+        string $order,
+        int $limit,
+        int $offset
+    ): array
+    {
+        $qb = $this->createQueryBuilder('c');
+
+        if ($user) {
+            $qb->andWhere('c.user = :user')->setParameter('user', $user);
+        }
+        if ($taskId !== null) {
+            $qb
+                ->join('c.task', 't')
+                ->andWhere('t.id = :taskId')
+                ->setParameter('taskId', $taskId);
+        }
+        if ($q !== null) {
+            $qb
+                ->andWhere('LOWER(c.text) LIKE :q')
+                ->setParameter('q', '%' . mb_strtolower($q) . '%');
+        }
+
+        $sortField = match ($sort) {
+            'createdAt' => 'c.createdAt',
+            'updatedAt' => 'c.updatedAt',
+            default => 'c.id',
+        };
+
+        return $qb
+            ->orderBy($sortField, $this->normalizeOrder($order))
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function count(array $criteria = []): int
     {
         return parent::count($criteria);
+    }
+
+    public function countByUser(User $user): int
+    {
+        return parent::count(['user' => $user]);
+    }
+
+    public function countByFilters(?User $user, ?int $taskId, ?string $q): int
+    {
+        $qb = $this->createQueryBuilder('c')->select('COUNT(c.id)');
+
+        if ($user) {
+            $qb->andWhere('c.user = :user')->setParameter('user', $user);
+        }
+        if ($taskId !== null) {
+            $qb
+                ->join('c.task', 't')
+                ->andWhere('t.id = :taskId')
+                ->setParameter('taskId', $taskId);
+        }
+        if ($q !== null) {
+            $qb
+                ->andWhere('LOWER(c.text) LIKE :q')
+                ->setParameter('q', '%' . mb_strtolower($q) . '%');
+        }
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    private function normalizeOrder(string $order): string
+    {
+        return strtolower($order) === 'desc' ? 'DESC' : 'ASC';
     }
 
     public function save(Comment $comment): void
